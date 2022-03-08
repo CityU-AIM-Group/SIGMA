@@ -1,6 +1,8 @@
 # SIGMA: Semantic-complete Graph Matching For Domain Adaptative Object Detection
 
-This is the official implementation of SIGMA: Semantic-complete Graph Matching For Domain Adaptative Object Detection (CVPR22).
+By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
+
+This is the official implementation of SIGMA: Semantic-complete Graph Matching For Domain Adaptative Object Detection (CVPR22). Welcome to follow our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 oral), which is the foundation of this work.
 
 Codes and well-trained models will be released soon.
 
