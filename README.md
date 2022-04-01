@@ -49,7 +49,7 @@ the detector is heavily based on [FCOS](https://github.com/tianzhi0549/FCOS/tree
 More detailed dataset preparation can be found at [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
 
 ## Tutorals for core codes
-1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look at first.
+1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look.
 2) We modify the origin [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
 3) GM is integrated in this "middle layer" [graph_matching_head.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
 4) Node sampling is conducted in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
