@@ -72,7 +72,7 @@ We have provided lots of well-trained models at ([onedrive](https://portland-my.
 | Cityscapes -> Foggy Cityscapes | VGG16 | 24.0 |43.6|23.8| city_to_foggy_vgg16_43.58_mAP.pth|
 | Cityscapes -> Foggy Cityscapes | VGG16 | 24.3 |43.9|22.6| city_to_foggy_vgg16_43.90_mAP.pth|
 | Cityscapes -> Foggy Cityscapes | Res50 | 22.7 |44.3|21.2| city_to_foggy_res50_44.26_mAP.pth|
-| Cityscapes -> BDD100k| VGG16 | - |32.7|- |bdd100k_to_city_vgg16_32.65_mAP.pth|
+| Cityscapes -> BDD100k| VGG16 | - |32.7|- |city_to_bdd100k_vgg16_32.65_mAP.pth|
 | Sim10k -> Cityscapes | VGG16 | 33.4 |57.1 |33.8 |sim10k_to_city_vgg16_53.73_mAP.pth|
 | KITTI -> Cityscapes | VGG16 | 22.6 |46.6 |20.0 |kitti_to_city_vgg16_46.45_mAP.pth|
 
