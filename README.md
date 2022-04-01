@@ -35,7 +35,7 @@ Step 1: Format three benchmark datasets. (you can also try BDD100k)
 ```
 
 
-Step 2: change the data root for your dataset at paths_catalog.py.
+Step 2: change the data root for your dataset at [paths_catalog.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/paths_catalog.py).
 
 ```
 DATA_DIR = [$Your dataset root]
@@ -47,6 +47,15 @@ The implementation of our anchor-free
 the detector is heavily based on [FCOS](https://github.com/tianzhi0549/FCOS/tree/f0a9731dac1346788cc30d5751177f2695caaa1f).
  -->
 More detailed dataset preparation can be found at [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
+
+## Tutorals for core codes
+1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look at first.
+2) We modify the origin [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
+3) GM is integrated in this "middle layer" [graph_matching_head.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
+4) Node sampling is conducted in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
+5) We preserve lots of APIs for detailed choices of implementatin in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
+
+
 
 ## Well-trained models
 We have provided lots of well-trained models at one-drive ([onedrive line](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
@@ -66,13 +75,7 @@ We have provided lots of well-trained models at one-drive ([onedrive line](https
 | Sim10k -> Cityscapes | VGG16 | 33.4 |57.1 |33.8 |sim10k_to_city_vgg16_53.73_mAP.pth|
 | KITTI -> Cityscapes | VGG16 | 22.6 |46.6 |20.0 |kitti_to_city_vgg16_46.45_mAP.pth|
 
-
-## Core codes
-
-
-
-## Toturals
-
+## Get start
 
 Train the model from the scratch
 ```
