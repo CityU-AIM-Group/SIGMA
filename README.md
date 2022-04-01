@@ -12,7 +12,7 @@ Check [INSTALL.md](https://github.com/CityU-AIM-Group/SIGMA/blob/main/INSTALL.md
 
 ## Data preparation
 
-Step 1: Format three benchmark datasets. (you can also try BDD100k)
+Step 1: Format three benchmark datasets. (BDD100k is also available)
 
 ```
 [DATASET_PATH]
