@@ -2,7 +2,7 @@
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
-Welcome to follow our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work.
+Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work.
 
 
 ## Installation
