@@ -109,7 +109,8 @@ If you think this work is helpful for your project, please give it a star and ci
 
 ## Contact
 
-Wuyang Li: wuyangli2-c@my.cityu.edu.hk
+E-mail: wuyangli2-c@my.cityu.edu.hk 
+Wechat: 17720031102
 
 ## Acknowledgements 
 
