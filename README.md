@@ -59,7 +59,7 @@ More detailed dataset preparation can be found at [EPM](https://github.com/cheng
 
 
 ## Well-trained models
-We have provided lots of well-trained models at one-drive ([onedrive line](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
+We have provided lots of well-trained models at ([onedrive](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
 1) Kindly note that it is easy to get higher results than the reported ones with tailor-tuned hyperparameters.
 2) We didn't tune the hyperparameters for ResNet-50, and it could be further improved.
 3) We have tested on C2F and S2F with end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix. 
