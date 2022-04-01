@@ -48,22 +48,23 @@ the detector is heavily based on [FCOS](https://github.com/tianzhi0549/FCOS/tree
  -->
 More detailed dataset preparation can be found at [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
 
-## Tutorals for core codes
+## Tutorials for this project
 1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look.
-2) We modify the origin [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
+2) We modify the [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
 3) GM is integrated in this "middle layer" [graph_matching_head.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
 4) Node sampling is conducted in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
-5) We preserve lots of APIs for detailed choices of implementatin in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
+5) We preserve lots of APIs for many choices of detailed implementation in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
+6) We hope this work can inspire lots of good ideas
 
 
 
 ## Well-trained models
 We have provided lots of well-trained models at one-drive ([onedrive line](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
 1) Kindly note that it is easy to get higher results than the reported ones with tailor-tuned hyperparameters.
-2) We didn't tune the hyperparameters for ResNet-50 effortly and it could be further imprved.
-3) We have tested on C2F and S2F with an end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix. 
+2) We didn't tune the hyperparameters for ResNet-50, and it could be further improved.
+3) We have tested on C2F and S2F with end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix. 
 4) As mentioned in the paper, we tried to obtain the best results with two-stage training, which will be provided in the future. 
-5) After correcting a default hyper-paramter, our S2C gives 4 mAP gains compared with the reportted one, as explained in the config file.
+5) After correcting a default hyper-parameter, our S2C gives four mAP gains compared with the reported one, as explained in the config file.
 
 
 | dataset | backbone |   mAP	 | mAP@50 |  mAP@75 |	 file-name |	
