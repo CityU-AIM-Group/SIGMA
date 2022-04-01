@@ -10,7 +10,7 @@
 - (optional) OpenCV for the webcam demo
 
 ### Step-by-step installation
-
+```
 conda create --name SIGMA python=3.7
 conda activate SIGMA
 
@@ -50,3 +50,4 @@ unset INSTALL_DIR
 
 # or if you are on macOS
 # MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py build develop
+```
