@@ -9,7 +9,6 @@ Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-
 
 Check [INSTALL.md](https://github.com/CityU-AIM-Group/SIGMA/blob/main/INSTALL.md) for installation instructions.
 
-
 ## Data preparation
 
 Step 1: Format three benchmark datasets. (BDD100k is also available)
@@ -34,38 +33,28 @@ Step 1: Format three benchmark datasets. (BDD100k is also available)
    └─ JPEGImages
 ```
 
-
 Step 2: change the data root for your dataset at [paths_catalog.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/paths_catalog.py).
 
 ```
 DATA_DIR = [$Your dataset root]
 ```
-<!-- 
-This work is based on the EveryPixelMatter (ECCV20) [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
-
-The implementation of our anchor-free 
-the detector is heavily based on [FCOS](https://github.com/tianzhi0549/FCOS/tree/f0a9731dac1346788cc30d5751177f2695caaa1f).
- -->
 More detailed dataset preparation can be found at [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
 
 ## Tutorials for this project
 1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look.
 2) We modify the [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
-3) GM is integrated in this "middle layer" [graph_matching_head.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
+3) GM is integrated in this "middle layer" [graph_matching_head](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
 4) Node sampling is conducted in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
-5) We preserve lots of APIs for many choices of detailed implementation in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
+5) We preserve lots of APIs for many implementation choices in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
 6) We hope this work can inspire lots of good ideas
-
-
 
 ## Well-trained models
 We have provided lots of well-trained models at ([onedrive](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
 1) Kindly note that it is easy to get higher results than the reported ones with tailor-tuned hyperparameters.
 2) We didn't tune the hyperparameters for ResNet-50, and it could be further improved.
-3) We have tested on C2F and S2F with end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix. 
-4) As mentioned in the paper, we tried to obtain the best results with two-stage training, which will be provided in the future. 
-5) After correcting a default hyper-parameter, our S2C gives four mAP gains compared with the reported one, as explained in the config file.
-
+3) We have tested on C2F and S2F with end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix.
+4) After correcting a default hyper-parameter, our S2C gives four mAP gains compared with the reported one, as explained in the config file.
+<!-- 4) As mentioned in the paper, we tried to obtain the best results with two-stage training, which will be provided in the future.  -->
 
 | dataset | backbone |   mAP	 | mAP@50 |  mAP@75 |	 file-name |	
 | :-----| :----: | :----: |:-----:| :----: | :----: | 
@@ -110,11 +99,11 @@ If you think this work is helpful for your project, please give it a star and ci
 ## Contact
 
 E-mail: wuyangli2-c@my.cityu.edu.hk 
-Wechat: 17720031102
+<!-- Wechat: 17720031102 -->
 
 ## Acknowledgements 
 
-This work is based on the EveryPixelMatter (ECCV20) [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
+This work is based on [SCAN (AAAI'22 ORAL)](https://github.com/CityU-AIM-Group/SCAN) and [EPM (ECCV20)](https://github.com/chengchunhsu/EveryPixelMatters). 
 
 The implementation of our anchor-free detector is from [FCOS](https://github.com/tianzhi0549/FCOS/tree/f0a9731dac1346788cc30d5751177f2695caaa1f).
 
