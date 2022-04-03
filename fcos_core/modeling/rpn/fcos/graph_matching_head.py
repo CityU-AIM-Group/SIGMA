@@ -16,6 +16,10 @@ from fcos_core.modeling.discriminator.layer import GradientReversal
 import logging
 
 class GRAPHHead(torch.nn.Module):
+    
+    # Project the sampled visual features to the graph embeddings:
+    # visual features: [0,+INF) -> graph embedding: (-INF, +INF)
+    
     def __init__(self, cfg, in_channels, out_channel, mode='in'):
         """
         Arguments:
@@ -79,19 +83,20 @@ class GModule(torch.nn.Module):
         self.fpn_strides                = cfg.MODEL.FCOS.FPN_STRIDES
         self.num_classes                = cfg.MODEL.FCOS.NUM_CLASSES
 
-        # One-to-one (o2o) matching or multi-to-multi matching?
-        self.matching_cfg               = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG # 'o2o' and 'm2o'
-
-        self.with_cluster_update        = cfg.MODEL.MIDDLE_HEAD.GM.WITH_CLUSTER_UPDATE # add clustering to update seeds
-        self.with_semantic_completion   = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SEMANTIC_COMPLETION # add sampling from seeds
-        # Add quadratic matching constrains.
+        # One-to-one (o2o) matching or many-to-many matching?
+        self.matching_cfg               = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG # 'o2o' and 'm2m'
+        
+        self.with_cluster_update        = cfg.MODEL.MIDDLE_HEAD.GM.WITH_CLUSTER_UPDATE # add spectral clustering to update seeds
+        self.with_semantic_completion   = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SEMANTIC_COMPLETION # generate hallucination nodes
+        
+        # add quadratic matching constraints.
         self.with_quadratic_matching    = cfg.MODEL.MIDDLE_HEAD.GM.WITH_QUADRATIC_MATCHING
         #TODO qudratic matching is not very stable now
 
 
 
-        self.with_cond_cls              = cfg.MODEL.MIDDLE_HEAD.GM.WITH_COND_CLS # use conditional kernel for node classification? (x)
-        self.with_score_weight          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SCORE_WEIGHT # use scores for node loss (x)
+        self.with_cond_cls              = cfg.MODEL.MIDDLE_HEAD.GM.WITH_COND_CLS # use conditional kernel for node classification? (didn't use)
+        self.with_score_weight          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SCORE_WEIGHT # use scores for node loss (didn't use)
 
 
         self.weight_matching            = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_LOSS_WEIGHT
@@ -105,7 +110,7 @@ class GModule(torch.nn.Module):
         self.with_global_graph          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_GLOBAL_GRAPH
 
 
-        # Testing 3 positions for the node alignment.(former is better)
+        # Test 3 positions for the node alignment. (the former is better)
         self.node_dis_place             = cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_PLACE
 
         self.logger = logging.getLogger("fcos_core.trainer")
@@ -119,7 +124,6 @@ class GModule(torch.nn.Module):
 
         ) # Used for node classification
         init_item.append('node_cls_middle')
-
         # Pre-processing
         self.node_affinity = Affinity(d=256)
         self.head_in_cfg =  cfg.MODEL.MIDDLE_HEAD.IN_NORM
@@ -135,6 +139,7 @@ class GModule(torch.nn.Module):
                 nn.LayerNorm(256, elementwise_affine=False),
             )
             init_item.append('head_in_ln')
+            
         # Semantic transfer settings
         self.InstNorm_layer = nn.InstanceNorm2d(1)
         self.graph_generator = make_prototype_evaluator(self.cfg)
@@ -146,7 +151,7 @@ class GModule(torch.nn.Module):
         self.matching_cfg = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG
 
 
-        # Different matching loss choics
+        # Different matching loss choices
         if cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_LOSS_CFG == 'L1':
             self.matching_loss = nn.L1Loss(reduction='sum')
         elif cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_LOSS_CFG == 'MSE':
@@ -243,7 +248,7 @@ class GModule(torch.nn.Module):
                 None, features_t, score_maps
             )
 
-            # Vision to Graph Transformation and Node Alignment
+            # vision to graph transformation and the node alignment
             if self.with_node_dis and nodes_2 is not None and self.node_dis_place =='feat' :
                 nodes_rev = self.grad_reverse(torch.cat([nodes_1, nodes_2], dim=0))
                 target_1 = torch.full([nodes_1.size(0), 1], 1.0, dtype=torch.float, device=nodes_1.device)
@@ -347,7 +352,7 @@ class GModule(torch.nn.Module):
         weights: the confidence of sampled source/target nodes ([0.0,1.0] scores for target nodes and 1.0 for source nodes )
         (we didn't utilize weights in the end)
 
-        We permutes graph nodes according to the class from 1 to K, and completes the missing class
+        We permute graph nodes according to the class from 1 to K and complete the missing class.
 
         '''
 
@@ -522,7 +527,7 @@ class GModule(torch.nn.Module):
 
     def update_seed(self, sr_nodes, sr_labels, tg_nodes=None, tg_labels=None):
 
-        k = 20 # clustering with too small number of nodes is somewhat meaningless
+        k = 20 # conduct clustering with a too-small number of nodes is somewhat meaningless
         for cls in sr_labels.unique().long():
             bs = sr_nodes[sr_labels == cls].detach()
 
@@ -580,7 +585,7 @@ class GModule(torch.nn.Module):
             # print('FP: ', FP_loss, 'TP: ', TP_loss)
             matching_loss = TP_loss + FP_loss
 
-        elif self.matching_cfg == 'm2m':
+        elif self.matching_cfg == 'm2m': # Refer to the Appendix
             M = self.node_affinity(nodes_1, nodes_2)
             matching_target = torch.mm(self.one_hot(labels_side1), self.one_hot(labels_side2).t())
             matching_loss = self.matching_loss(M.sigmoid(), matching_target.float()).mean()
