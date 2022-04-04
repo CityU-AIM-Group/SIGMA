@@ -2,12 +2,14 @@
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
-Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work.
+Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
 
 
 ## Installation
 
 Check [INSTALL.md](https://github.com/CityU-AIM-Group/SIGMA/blob/main/INSTALL.md) for installation instructions.
+
+If you have any problem in terms of installation, feel free to screenshot your issue for me. Thanks.
 
 ## Data preparation
 
