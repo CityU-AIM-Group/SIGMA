@@ -28,7 +28,7 @@ MODEL:
       WITH_CTR: False  # sample target nodes with both cls/centerness maps
 
       # loss weight
-      MATCHING_LOSS_WEIGHT: 0.1 # for adapting p(y|x) with EM
+      MATCHING_LOSS_WEIGHT: 0.1 # for adapting p(x|y) with matching
       NODE_LOSS_WEIGHT: 1.0 # for enhancing semantic modeling
 
       # node discriminator for adapting p(x)
