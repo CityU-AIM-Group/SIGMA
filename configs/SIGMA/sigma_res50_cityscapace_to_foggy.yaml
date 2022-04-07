@@ -6,7 +6,7 @@ MODEL:
 
   RPN_ONLY: True
   FCOS_ON: True
-  DA_ON: Truesa
+  DA_ON: True
   ATSS_ON: False
 
   MIDDLE_HEAD_CFG: 'GM_HEAD'
@@ -99,8 +99,8 @@ SOLVER:
   INITIAL_AP50: 35
   WEIGHT_DECAY: 0.0001
   MAX_ITER: 100000
-  # 2 for source and 2 for target
-  IMS_PER_BATCH: 2
+  # 4 for source and 4 for target
+  IMS_PER_BATCH: 4
   CHECKPOINT_PERIOD: 80000
   #
   BACKBONE:
