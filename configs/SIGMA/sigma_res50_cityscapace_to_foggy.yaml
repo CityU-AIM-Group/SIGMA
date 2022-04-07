@@ -1,8 +1,8 @@
 OUTPUT_DIR: './experiments/sigma/city_to_foggy_r50/'
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
-  # WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50" # Initialed by pretrained weight
-  WEIGHT: './well_trained_models/city_to_foggy_res50_44.26_mAP.pth' # tested with our well-trained model
+  WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50" # Initialed by pretrained weight
+  # WEIGHT: './well_trained_models/city_to_foggy_res50_44.26_mAP.pth' # tested with our well-trained model
 
   RPN_ONLY: True
   FCOS_ON: True

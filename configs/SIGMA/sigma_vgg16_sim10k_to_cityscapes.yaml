@@ -1,11 +1,10 @@
 OUTPUT_DIR: './experiments/sigma/sim10k_to_cityscapes_vgg16/'
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
-  # WEIGHT: 'https://s3.ap-northeast-2.amazonaws.com/open-mmlab/pretrain/third_party/vgg16_caffe-292e1171.pth' ' # Initialed by imagenet
-  # WEIGHT: './well_trained_models/sim10k_to_city_vgg16_54.31_mAP.pth' # Initialed by pretrained weight
+  WEIGHT: 'https://s3.ap-northeast-2.amazonaws.com/open-mmlab/pretrain/third_party/vgg16_caffe-292e1171.pth'  # Initialed by imagenet
 
   # NOTE: In our cvpr version, we mistakely set FCOS.NMS_TH as 0.3, giving a 53.7 result. After setting it correctly, sigma gives 57.1 mAP....
-  WEIGHT: './well_trained_models/sim10k_to_city_vgg16_53.73_mAP.pth' # Initialed by pretrained weight
+  # WEIGHT: './well_trained_models/sim10k_to_city_vgg16_53.73_mAP.pth' # Initialed by pretrained weight
 
   RPN_ONLY: True
   FCOS_ON: True
