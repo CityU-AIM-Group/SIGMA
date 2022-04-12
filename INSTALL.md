@@ -45,6 +45,10 @@ cd SIGMA
 # re-build it
 python setup.py build develop
 
+# If you meet the python version problem, 
+# pls check the scipy verison (we use 1.6.0),
+# since the automatically installed 1.8+ version 
+# may not support python 3.7.
 
 unset INSTALL_DIR
 
