@@ -8,24 +8,24 @@ MODEL:
   RPN_ONLY: True
   FCOS_ON: True
   DA_ON: True
-  ATSS_ON: False # you can try different detectors, such as ATSS and PAA
+  ATSS_ON: False # ATSS is integrated in this project
   MIDDLE_HEAD_CFG: 'GM_HEAD' # prepared for unifying our previous SCAN framework
   MIDDLE_HEAD:
     CONDGRAPH_ON: True
-    IN_NORM: 'LN' # support GN/BN/LN
+    IN_NORM: 'LN' # vison-to-graph transformation (support GN/BN/LN)
     NUM_CONVS_IN: 2
     GM:
       # matching cfg
       MATCHING_LOSS_CFG: 'MSE'
-      MATCHING_CFG: 'o2o' # one-to-one (o2o) or many-to-many (m2m)
-      WITH_QUADRATIC_MATCHING: True # This gives a little gain for the second stage training
+      MATCHING_CFG: 'o2o' # one-to-one (o2o) or many-to-many (m2m) (m2m replaces sinkhorn with sinkhron) 
+      WITH_QUADRATIC_MATCHING: True # Quadratic constraints in graph matching. This gives a little gain for the second stage training
     
       # node sampling
       NUM_NODES_PER_LVL_SR: 100  # per-level maximum nodes 
       NUM_NODES_PER_LVL_TG: 100
-      BG_RATIO: 8 # background node ratios
-      WITH_SCORE_WEIGHT: False # use confidence as a weight in the node loss
-      WITH_CTR: False  # sample target nodes with both cls/centerness maps
+      BG_RATIO: 8 # the background node ratio
+      WITH_SCORE_WEIGHT: False # use confidence as the adaptive weight in the node loss
+      WITH_CTR: False  # sample target nodes with classification scores \times centerness scors
 
       # loss weight
       MATCHING_LOSS_WEIGHT: 0.1 # for adapting p(x|y) with matching
@@ -37,10 +37,10 @@ MODEL:
       NODE_DIS_LAMBDA:  0.02
 
       # set False to each of them will give a little performacne decrease
-      WITH_SEMANTIC_COMPLETION: True
-      WITH_CLUSTER_UPDATE: True
-      WITH_COMPLETE_GRAPH: True
-      WITH_DOMAIN_INTERACTION: True
+      WITH_SEMANTIC_COMPLETION: True # Conduct Gaussian sampling to complete the missing nodes
+      WITH_CLUSTER_UPDATE: True # Use spectrual clustering to update the Graph-guided Memory Bank
+      WITH_COMPLETE_GRAPH: True # Conduct one-layer graph-based message propogation (GCN in our paper)
+      WITH_DOMAIN_INTERACTION: True # Cross Graph Interaction
      
   BACKBONE:
     CONV_BODY: "VGG-16-FPN-RETINANET"
@@ -98,7 +98,7 @@ SOLVER:
   WEIGHT_DECAY: 0.0001
   MAX_ITER: 100000
   # 4 for source and 4 for target
-  IMS_PER_BATCH: 2
+  IMS_PER_BATCH: 4 # you can use bs=2 for 2080Ti
   CHECKPOINT_PERIOD: 100000
   
   BACKBONE:

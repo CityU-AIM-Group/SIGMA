@@ -1,6 +1,6 @@
 # --------------------------------------------------------
 # SIGMA: Semantic-complete Graph Matching for Domain Adaptive Object Detection (CVPR22-ORAL)
-# Witten by Wuyang Li
+# Written by Wuyang Li
 # Based on https://github.com/CityU-AIM-Group/SCAN/blob/main/fcos_core/modeling/rpn/fcos/condgraph.py
 # --------------------------------------------------------
 import torch
@@ -217,9 +217,6 @@ class GModule(torch.nn.Module):
     def forward(self, images, features, targets=None, score_maps=None):
 
         '''
-        Kindly note that we rewrite the trainer, which is different from
-        https://github.com/chengchunhsu/EveryPixelMatters/blob/master/fcos_core/engine/trainer.py
-
         We have equal number of source/target feature maps
         features: [sr_feats, tg_feats]
         targets: [sr_targets, None]
@@ -239,7 +236,9 @@ class GModule(torch.nn.Module):
             features_s, features_t = features
             middle_head_loss = {}
 
-            # Generate semantic incomplete graph nodes
+            # STEP1: sample pixels and generate semantic incomplete graph nodes
+            # node_1 and node_2 mean the source/target raw nodes
+            # label_1 and label_2 mean the GT and pseudo labels
 
             nodes_1, labels_1, weights_1 = self.graph_generator(
                 self.compute_locations(features_s), features_s, targets
@@ -248,7 +247,8 @@ class GModule(torch.nn.Module):
                 None, features_t, score_maps
             )
 
-            # vision to graph transformation and the node alignment
+            #  conduct node alignment to prevent overfit
+
             if self.with_node_dis and nodes_2 is not None and self.node_dis_place =='feat' :
                 nodes_rev = self.grad_reverse(torch.cat([nodes_1, nodes_2], dim=0))
                 target_1 = torch.full([nodes_1.size(0), 1], 1.0, dtype=torch.float, device=nodes_1.device)
@@ -258,6 +258,9 @@ class GModule(torch.nn.Module):
                 node_dis_loss = self.weight_dis * self.loss_fn(nodes_rev.view(-1), tg_rev.view(-1))
                 middle_head_loss.update({'dis_loss': node_dis_loss})
 
+            # STEP2: vision-to-graph transformation 
+            # LN is conducted on the node embedding
+            # GN/BN are conducted on the whole image fetaure
 
             if  self.head_in_cfg != 'LN':
                 features_s = self.head_in(features_s)
@@ -272,17 +275,24 @@ class GModule(torch.nn.Module):
                 nodes_1 = self.head_in_ln(nodes_1)
                 nodes_2 = self.head_in_ln(nodes_2) if nodes_2 is not None else None
 
-
-            # TODO: SIGMA can only work well when both source and target nodes exist. Otherwise, ignore this iteration.
+            
+            # TODO: Matching can only work for adaptation when both source and target nodes exist. 
+            # Otherwise, we split the source nodes half-to-half to train SIGMA
 
             if nodes_2 is not None: # Nodes exist in the target domain
+
+                # STEP3: Conduct Domain-guided Node Completion (DNC)
+
                 (nodes_1, nodes_2), (labels_1, labels_2), (weights_1, weights_2) = \
                     self._forward_preprocessing_source_target((nodes_1, nodes_2), (labels_1, labels_2),(weights_1,weights_2))
+
+                # STEP4: Single-layer GCN
 
                 if self.with_complete_graph:
                     nodes_1, edges_1 = self._forward_intra_domain_graph(nodes_1)
                     nodes_2, edges_2 = self._forward_intra_domain_graph(nodes_2)
 
+                # STEP5: Update Graph-guided Memory Bank (Bank) with enhanced node embedding
 
                 self.update_seed(nodes_1, labels_1, nodes_2, labels_2)
 
@@ -294,6 +304,8 @@ class GModule(torch.nn.Module):
                     nodes_rev = self.node_dis_2(nodes_rev)
                     node_dis_loss = self.weight_dis * self.loss_fn(nodes_rev.view(-1), tg_rev.view(-1))
                     middle_head_loss.update({'dis_loss': node_dis_loss})
+
+                # STEP6: Conduct Cross Graph Interaction (CGI)
 
                 if self.with_domain_interaction:
                     nodes_1, nodes_2 = self._forward_cross_domain_graph(nodes_1, nodes_2)
@@ -307,6 +319,9 @@ class GModule(torch.nn.Module):
                     nodes_rev = self.node_dis_2(nodes_rev)
                     node_dis_loss = self.weight_dis * self.loss_fn(nodes_rev.view(-1), tg_rev.view(-1))
                     middle_head_loss.update({'dis_loss': node_dis_loss})
+
+
+                # STEP7: Generate node loss
 
                 node_loss = self._forward_node_loss(
                     torch.cat([nodes_1, nodes_2], dim=0),
@@ -332,6 +347,8 @@ class GModule(torch.nn.Module):
 
             middle_head_loss.update({'node_loss': self.weight_nodes * node_loss})
 
+            # STEP8: Generate Semantic-aware Node Affinity and Structure-aware Matching loss
+
             if self.matching_cfg != 'none':
                 matching_loss_affinity, affinity = self._forward_aff(nodes_1, nodes_2, labels_1, labels_2)
                 middle_head_loss.update({'mat_loss_aff': self.weight_matching * matching_loss_affinity })
@@ -350,7 +367,6 @@ class GModule(torch.nn.Module):
         nodes: sampled raw source/target nodes
         labels: the ground-truth/pseudo-label of sampled source/target nodes
         weights: the confidence of sampled source/target nodes ([0.0,1.0] scores for target nodes and 1.0 for source nodes )
-        (we didn't utilize weights in the end)
 
         We permute graph nodes according to the class from 1 to K and complete the missing class.
 
