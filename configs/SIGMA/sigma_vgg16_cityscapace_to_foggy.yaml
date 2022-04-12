@@ -7,17 +7,18 @@ MODEL:
 
   RPN_ONLY: True
   FCOS_ON: True
-  DA_ON: True
   ATSS_ON: False # ATSS is integrated in this project
+  
+  DA_ON: True # weather to conduct domain adaptation
   MIDDLE_HEAD_CFG: 'GM_HEAD' # prepared for unifying our previous SCAN framework
   MIDDLE_HEAD:
     CONDGRAPH_ON: True
     IN_NORM: 'LN' # vison-to-graph transformation (support GN/BN/LN)
-    NUM_CONVS_IN: 2
+    NUM_CONVS_IN: 2 # the number of convs if IN_NORM = BN/GN
     GM:
       # matching cfg
-      MATCHING_LOSS_CFG: 'MSE'
-      MATCHING_CFG: 'o2o' # one-to-one (o2o) or many-to-many (m2m) (m2m replaces sinkhorn with sinkhron) 
+      MATCHING_LOSS_CFG: 'MSE' # matching loss config (support L1)
+      MATCHING_CFG: 'o2o' # one-to-one (o2o) or many-to-many (m2m) (m2m replaces sinkhorn with sigmoid) 
       WITH_QUADRATIC_MATCHING: True # Quadratic constraints in graph matching. This gives a little gain for the second stage training
     
       # node sampling
@@ -29,12 +30,12 @@ MODEL:
 
       # loss weight
       MATCHING_LOSS_WEIGHT: 0.1 # for adapting p(x|y) with matching
-      NODE_LOSS_WEIGHT: 1.0 # for enhancing semantic modeling
+      NODE_LOSS_WEIGHT: 1.0 # node loss to train auxilary parameters
 
       # node discriminator for adapting p(x)
-      WITH_NODE_DIS: True # without NA, model is easy to overfit to noisy target nodes. (mAP increases and then decreases)
+      WITH_NODE_DIS: True # without NA, SIGMA is easy to overfit to noisy target nodes. (mAP increases and then decreases)
       NODE_DIS_WEIGHT: 0.1 # you can try to set 0.2, which may get a better result
-      NODE_DIS_LAMBDA:  0.02
+      NODE_DIS_LAMBDA:  0.02 # gradient scaling
 
       # set False to each of them will give a little performacne decrease
       WITH_SEMANTIC_COMPLETION: True # Conduct Gaussian sampling to complete the missing nodes
@@ -58,7 +59,7 @@ MODEL:
     REG_CTR_ON: True
 
   ADV:
-    GA_DIS_LAMBDA: 0.2 # for dis loss
+    GA_DIS_LAMBDA: 0.2 # gradient scaling
     CON_NUM_SHARED_CONV_P7: 4
     CON_NUM_SHARED_CONV_P6: 4
     CON_NUM_SHARED_CONV_P5: 4
