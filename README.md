@@ -81,7 +81,7 @@ Test the well-trained model
 ```
 python tools/test_net.py \
         --config-file configs/SIGMA/xxx.yaml \
-        WEIGHT 'well_trained_models/xxx.pth'
+        MODEL.WEIGHT 'well_trained_models/xxx.pth'
 
 ```
 
