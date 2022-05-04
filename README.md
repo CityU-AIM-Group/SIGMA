@@ -81,7 +81,12 @@ Test the well-trained model
 ```
 python tools/test_net.py \
         --config-file configs/SIGMA/xxx.yaml \
-        MODEL.WEIGHT 'well_trained_models/xxx.pth'
+        MODEL.WEIGHT well_trained_models/xxx.pth
+
+# For example
+python tools/test_net.py \
+--config-file configs/SIGMA/sigma_res50_cityscapace_to_foggy.yaml \
+MODEL.WEIGHT well_trained_models/city_to_foggy_res50_44.26_mAP.pth
 
 ```
 
