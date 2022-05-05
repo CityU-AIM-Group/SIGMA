@@ -17,7 +17,7 @@ If you have any problem in terms of installation, feel free to screenshot your i
 
 Step 1: Format three benchmark datasets. (BDD100k is also available)
 
-We follow [EPM](https://github.com/chengchunhsu/EveryPixelMatters) toconstruct the training and testing set by three following settings:
+We follow [EPM](https://github.com/chengchunhsu/EveryPixelMatters) to construct the training and testing set by three following settings:
 
 - Cityscapes -> Foggy Cityscapes
   - Download Cityscapes and Foggy Cityscapes dataset from the [link](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *leftImg8bit_trainvaltest.zip* for Cityscapes and *leftImg8bit_trainvaltest_foggy.zip* for Foggy Cityscapes.
@@ -64,11 +64,11 @@ DATA_DIR = [$Your dataset root]
 
 
 ## Tutorials for this project
-1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look.
+1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml).
 2) We modify the [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
-3) GM is integrated in this "middle layer" [graph_matching_head](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
-4) Node sampling is conducted in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
-5) We preserve lots of APIs for many implementation choices in [here](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
+3) GM is integrated in this "middle layer": [graph_matching_head](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/graph_matching_head.py).
+4) Node sampling is conducted together with fcos loss: [loss](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/modeling/rpn/fcos/loss.py).
+5) We preserve lots of APIs for many implementation choices in [defaults](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/defaults.py)
 6) We hope this work can inspire lots of good ideas
 
 ## Well-trained models
