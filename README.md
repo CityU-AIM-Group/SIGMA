@@ -17,6 +17,25 @@ If you have any problem in terms of installation, feel free to screenshot your i
 
 Step 1: Format three benchmark datasets. (BDD100k is also available)
 
+We follow [EPM](https://github.com/chengchunhsu/EveryPixelMatters) toconstruct the training and testing set by three following settings:
+
+- Cityscapes -> Foggy Cityscapes
+  - Download Cityscapes and Foggy Cityscapes dataset from the [link](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *leftImg8bit_trainvaltest.zip* for Cityscapes and *leftImg8bit_trainvaltest_foggy.zip* for Foggy Cityscapes.
+  - Download and extract the converted annotation from the following links: [Cityscapes and Foggy Cityscapes (COCO format)](https://drive.google.com/file/d/1LRNXW2Wee8tjuxc5gjVsFQv49vA_SBtk/view?usp=sharing).
+  - Extract the training sets from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` to `Cityscapes/leftImg8bit/` directory.
+  - Extract the training and validation set from *leftImg8bit_trainvaltest_foggy.zip*, then move the folder `leftImg8bit_foggy/train/` and `leftImg8bit_foggy/val/` to `Cityscapes/leftImg8bit_foggy/` directory.
+- Sim10k -> Cityscapes (class car only)
+  - Download Sim10k dataset and Cityscapes dataset from the following links: [Sim10k](https://fcav.engin.umich.edu/projects/driving-in-the-matrix) and [Cityscapes](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *repro_10k_images.tgz* and *repro_10k_annotations.tgz* for Sim10k and *leftImg8bit_trainvaltest.zip* for Cityscapes.
+  - Download and extract the converted annotation from the following links: [Sim10k (VOC format)](https://drive.google.com/file/d/1WoEPsG-u1aaGv-RiRy1b-ixtPYhsteVw/view?usp=sharing) and [Cityscapes (COCO format)](https://drive.google.com/file/d/1LRNXW2Wee8tjuxc5gjVsFQv49vA_SBtk/view?usp=sharing).
+  - Extract the training set from *repro_10k_images.tgz* and *repro_10k_annotations.tgz*, then move all images under `VOC2012/JPEGImages/` to `Sim10k/JPEGImages/` directory and move all annotations under `VOC2012/Annotations/` to `Sim10k/Annotations/`.
+  - Extract the training and validation set from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` and `leftImg8bit/val/` to `Cityscapes/leftImg8bit/` directory.
+- KITTI -> Cityscapes (class car only)
+  - Download KITTI dataset and Cityscapes dataset from the following links: [KITTI](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d) and [Cityscapes](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *data_object_image_2.zip* for KITTI and *leftImg8bit_trainvaltest.zip* for Cityscapes.
+  - Download and extract the converted annotation from the following links: [KITTI (VOC format)](https://drive.google.com/file/d/1_gAT2bCnR8js0Xo0EzHK7a_MS8xY833L/view?usp=sharing) and [Cityscapes (COCO format)](https://drive.google.com/file/d/1LRNXW2Wee8tjuxc5gjVsFQv49vA_SBtk/view?usp=sharing).
+  - Extract the training set from *data_object_image_2.zip*, then move all images under `training/image_2/` to `KITTI/JPEGImages/` directory.
+  - Extract the training and validation set from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` and `leftImg8bit/val/` to `Cityscapes/leftImg8bit/` directory.
+
+
 ```
 [DATASET_PATH]
 └─ Cityscapes
@@ -42,7 +61,7 @@ Step 2: change the data root for your dataset at [paths_catalog.py](https://gith
 ```
 DATA_DIR = [$Your dataset root]
 ```
-More detailed dataset preparation can be found at [EPM](https://github.com/chengchunhsu/EveryPixelMatters). 
+
 
 ## Tutorials for this project
 1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml). We strongly recommend you to have a look.
