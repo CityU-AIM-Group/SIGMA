@@ -7,27 +7,20 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from .loss import make_fcos_loss_evaluator, make_prototype_evaluator
-from fcos_core.layers import  BCEFocalLoss,  MultiHeadAttention,CrossGraph,Affinity,FocalLoss
+from fcos_core.layers import  BCEFocalLoss, MultiHeadAttention, Affinity
 import sklearn.cluster as cluster
-import matplotlib.pyplot as plt
-import ipdb
-import os
 from fcos_core.modeling.discriminator.layer import GradientReversal
 import logging
 
 class GRAPHHead(torch.nn.Module):
-    
     # Project the sampled visual features to the graph embeddings:
     # visual features: [0,+INF) -> graph embedding: (-INF, +INF)
-    
     def __init__(self, cfg, in_channels, out_channel, mode='in'):
         """
         Arguments:
             in_channels (int): number of channels of the input feature
         """
         super(GRAPHHead, self).__init__()
-        # TODO: Implement the sigmoid version first.
-
         if mode == 'in':
             num_convs = cfg.MODEL.MIDDLE_HEAD.NUM_CONVS_IN
         elif mode == 'out':
@@ -71,63 +64,52 @@ class GRAPHHead(torch.nn.Module):
             middle_tower.append(self.middle_tower(feature))
         return middle_tower
 
-
 class GModule(torch.nn.Module):
-
 
     def __init__(self, cfg, in_channels):
         super(GModule, self).__init__()
 
-
+        init_item = []
         self.cfg = cfg.clone()
+        self.logger = logging.getLogger("fcos_core.trainer")
+        self.logger.info('node dis setting: ' + str(cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_PLACE))
+
         self.fpn_strides                = cfg.MODEL.FCOS.FPN_STRIDES
         self.num_classes                = cfg.MODEL.FCOS.NUM_CLASSES
-
-        # One-to-one (o2o) matching or many-to-many matching?
-        self.matching_cfg               = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG # 'o2o' and 'm2m'
         
+        # One-to-one (o2o) matching or many-to-many (m2m) matching?
+        self.matching_cfg               = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG # 'o2o' and 'm2m'
         self.with_cluster_update        = cfg.MODEL.MIDDLE_HEAD.GM.WITH_CLUSTER_UPDATE # add spectral clustering to update seeds
         self.with_semantic_completion   = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SEMANTIC_COMPLETION # generate hallucination nodes
         
         # add quadratic matching constraints.
+        #TODO qudratic matching is not very stable in end-to-end training
         self.with_quadratic_matching    = cfg.MODEL.MIDDLE_HEAD.GM.WITH_QUADRATIC_MATCHING
-        #TODO qudratic matching is not very stable now
 
-
-
-        self.with_cond_cls              = cfg.MODEL.MIDDLE_HEAD.GM.WITH_COND_CLS # use conditional kernel for node classification? (didn't use)
-        self.with_score_weight          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SCORE_WEIGHT # use scores for node loss (didn't use)
-
-
+        # Several weights hyper-parameters
         self.weight_matching            = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_LOSS_WEIGHT
         self.weight_nodes               = cfg.MODEL.MIDDLE_HEAD.GM.NODE_LOSS_WEIGHT
         self.weight_dis                 = cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_WEIGHT
         self.lambda_dis                 = cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_LAMBDA
 
+        # Detailed settings
         self.with_domain_interaction    = cfg.MODEL.MIDDLE_HEAD.GM.WITH_DOMAIN_INTERACTION
         self.with_complete_graph        = cfg.MODEL.MIDDLE_HEAD.GM.WITH_COMPLETE_GRAPH
         self.with_node_dis              = cfg.MODEL.MIDDLE_HEAD.GM.WITH_NODE_DIS
         self.with_global_graph          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_GLOBAL_GRAPH
 
-
-        # Test 3 positions for the node alignment. (the former is better)
+        # Test 3 positions to put the node alignment discriminator. (the former is better)
         self.node_dis_place             = cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_PLACE
 
-        self.logger = logging.getLogger("fcos_core.trainer")
-        self.logger.info('node dis setting: ' + str(cfg.MODEL.MIDDLE_HEAD.GM.NODE_DIS_PLACE))
+        # future work
+        self.with_cond_cls              = cfg.MODEL.MIDDLE_HEAD.GM.WITH_COND_CLS # use conditional kernel for node classification? (didn't use)
+        self.with_score_weight          = cfg.MODEL.MIDDLE_HEAD.GM.WITH_SCORE_WEIGHT # use scores for node loss (didn't use)
 
-        init_item = []
-        self.node_cls_middle = nn.Sequential(
-            nn.Linear(256, 512),
-            nn.ReLU(),
-            nn.Linear(512, self.num_classes),
+        # Node sampling
+        self.graph_generator            = make_prototype_evaluator(self.cfg)
 
-        ) # Used for node classification
-        init_item.append('node_cls_middle')
-        # Pre-processing
-        self.node_affinity = Affinity(d=256)
+        # Pre-processing for the vision-to-graph transformation
         self.head_in_cfg =  cfg.MODEL.MIDDLE_HEAD.IN_NORM
-
         if self.head_in_cfg != 'LN':
             self.head_in = GRAPHHead(cfg, in_channels, in_channels, mode='in')
         else:
@@ -139,18 +121,30 @@ class GModule(torch.nn.Module):
                 nn.LayerNorm(256, elementwise_affine=False),
             )
             init_item.append('head_in_ln')
-            
-        # Semantic transfer settings
+
+        # node classification layers
+        self.node_cls_middle = nn.Sequential(
+            nn.Linear(256, 512),
+            nn.ReLU(),
+            nn.Linear(512, self.num_classes),
+        ) 
+        init_item.append('node_cls_middle')
+        
+        # Graph-guided Memory Bank
+        self.seed_project_left = nn.Linear(256, 256) # projection layer for the node completion
+        self.register_buffer('sr_seed', torch.randn(self.num_classes, 256)) # seed = bank
+        self.register_buffer('tg_seed', torch.randn(self.num_classes, 256))
+
+        # We directly utilize the singe-head attention for the graph aggreagtion and cross-graph interaction, 
+        # which will be improved in our future work
+        self.cross_domain_graph = MultiHeadAttention(256, 1, dropout=0.1, version='v2') # Cross Graph Interaction
+        self.intra_domain_graph = MultiHeadAttention(256, 1, dropout=0.1, version='v2') # Intra-domain graph aggregation
+
+        # Semantic-aware Node Affinity
+        self.node_affinity = Affinity(d=256)
         self.InstNorm_layer = nn.InstanceNorm2d(1)
-        self.graph_generator = make_prototype_evaluator(self.cfg)
 
-        # We directly utilize singe-head attention for the cross-node interaction
-        self.cross_domain_graph = MultiHeadAttention(256, 1, dropout=0.1, version='v2')
-        self.intra_domain_graph = MultiHeadAttention(256, 1, dropout=0.1, version='v2')
-
-        self.matching_cfg = cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_CFG
-
-
+        # Structure-aware Matching Loss
         # Different matching loss choices
         if cfg.MODEL.MIDDLE_HEAD.GM.MATCHING_LOSS_CFG == 'L1':
             self.matching_loss = nn.L1Loss(reduction='sum')
@@ -160,13 +154,7 @@ class GModule(torch.nn.Module):
             self.matching_loss = BCEFocalLoss()
         self.quadratic_loss = torch.nn.L1Loss(reduction='mean')
 
-        self.seed_project_left = nn.Linear(256, 256) # projection layer for the node completion
-
-        self.register_buffer('sr_seed', torch.randn(self.num_classes, 256)) # seed = bank
-        self.register_buffer('tg_seed', torch.randn(self.num_classes, 256))
-
-        if self.with_node_dis:
-            # self.grad_reverse = GradientReversal(0.02)
+        if self.with_node_dis: 
             self.grad_reverse = GradientReversal(self.lambda_dis)
             self.node_dis_2 = nn.Sequential(
                 nn.Linear(256,256),
@@ -184,29 +172,21 @@ class GModule(torch.nn.Module):
             self.loss_fn = nn.BCEWithLogitsLoss()
         self._init_weight(init_item)
 
-        self.iteration = 0
-
-
     def _init_weight(self, init_item=None):
         nn.init.normal_(self.seed_project_left.weight, std=0.01)
         nn.init.constant_(self.seed_project_left.bias, 0)
-
         if 'node_dis' in init_item:
             for i in self.node_dis_2:
                 if isinstance(i, nn.Linear):
                     nn.init.normal_(i.weight, std=0.01)
                     nn.init.constant_(i.bias, 0)
-
             self.logger.info('node_dis initialized')
-
         if 'node_cls_middle' in init_item:
             for i in self.node_cls_middle:
                 if isinstance(i, nn.Linear):
                     nn.init.normal_(i.weight, std=0.01)
                     nn.init.constant_(i.bias, 0)
-
             self.logger.info('node_cls_middle initialized')
-
         if 'head_in_ln' in init_item:
             for i in self.head_in_ln:
                 if isinstance(i, nn.Linear):
@@ -215,14 +195,12 @@ class GModule(torch.nn.Module):
             self.logger.info('head_in_ln initialized')
 
     def forward(self, images, features, targets=None, score_maps=None):
-
         '''
         We have equal number of source/target feature maps
         features: [sr_feats, tg_feats]
         targets: [sr_targets, None]
 
         '''
-
         if targets:
             features, feat_loss = self._forward_train(images, features, targets, score_maps)
             return features, feat_loss
@@ -231,7 +209,6 @@ class GModule(torch.nn.Module):
             features = self._forward_inference(images, features)
             return features, None
 
-
     def _forward_train(self, images, features, targets=None, score_maps=None):
             features_s, features_t = features
             middle_head_loss = {}
@@ -239,7 +216,6 @@ class GModule(torch.nn.Module):
             # STEP1: sample pixels and generate semantic incomplete graph nodes
             # node_1 and node_2 mean the source/target raw nodes
             # label_1 and label_2 mean the GT and pseudo labels
-
             nodes_1, labels_1, weights_1 = self.graph_generator(
                 self.compute_locations(features_s), features_s, targets
             )
@@ -248,7 +224,6 @@ class GModule(torch.nn.Module):
             )
 
             #  conduct node alignment to prevent overfit
-
             if self.with_node_dis and nodes_2 is not None and self.node_dis_place =='feat' :
                 nodes_rev = self.grad_reverse(torch.cat([nodes_1, nodes_2], dim=0))
                 target_1 = torch.full([nodes_1.size(0), 1], 1.0, dtype=torch.float, device=nodes_1.device)
@@ -260,8 +235,7 @@ class GModule(torch.nn.Module):
 
             # STEP2: vision-to-graph transformation 
             # LN is conducted on the node embedding
-            # GN/BN are conducted on the whole image fetaure
-
+            # GN/BN are conducted on the whole image feature
             if  self.head_in_cfg != 'LN':
                 features_s = self.head_in(features_s)
                 features_t = self.head_in(features_t)
@@ -275,25 +249,21 @@ class GModule(torch.nn.Module):
                 nodes_1 = self.head_in_ln(nodes_1)
                 nodes_2 = self.head_in_ln(nodes_2) if nodes_2 is not None else None
 
-            
             # TODO: Matching can only work for adaptation when both source and target nodes exist. 
             # Otherwise, we split the source nodes half-to-half to train SIGMA
 
-            if nodes_2 is not None: # Nodes exist in the target domain
+            if nodes_2 is not None: # Both domains have graph nodes
 
                 # STEP3: Conduct Domain-guided Node Completion (DNC)
-
                 (nodes_1, nodes_2), (labels_1, labels_2), (weights_1, weights_2) = \
                     self._forward_preprocessing_source_target((nodes_1, nodes_2), (labels_1, labels_2),(weights_1,weights_2))
 
                 # STEP4: Single-layer GCN
-
                 if self.with_complete_graph:
                     nodes_1, edges_1 = self._forward_intra_domain_graph(nodes_1)
                     nodes_2, edges_2 = self._forward_intra_domain_graph(nodes_2)
 
-                # STEP5: Update Graph-guided Memory Bank (Bank) with enhanced node embedding
-
+                # STEP5: Update Graph-guided Memory Bank (GMB) with enhanced node embedding
                 self.update_seed(nodes_1, labels_1, nodes_2, labels_2)
 
                 if self.with_node_dis and self.node_dis_place =='intra':
@@ -306,10 +276,8 @@ class GModule(torch.nn.Module):
                     middle_head_loss.update({'dis_loss': node_dis_loss})
 
                 # STEP6: Conduct Cross Graph Interaction (CGI)
-
                 if self.with_domain_interaction:
                     nodes_1, nodes_2 = self._forward_cross_domain_graph(nodes_1, nodes_2)
-
 
                 if self.with_node_dis and self.node_dis_place =='inter':
                     nodes_rev = self.grad_reverse(torch.cat([nodes_1, nodes_2], dim=0))
@@ -320,16 +288,14 @@ class GModule(torch.nn.Module):
                     node_dis_loss = self.weight_dis * self.loss_fn(nodes_rev.view(-1), tg_rev.view(-1))
                     middle_head_loss.update({'dis_loss': node_dis_loss})
 
-
                 # STEP7: Generate node loss
-
                 node_loss = self._forward_node_loss(
                     torch.cat([nodes_1, nodes_2], dim=0),
                     torch.cat([labels_1, labels_2], dim=0),
                     torch.cat([weights_1, weights_2], dim=0)
                                                     )
 
-            else: # Use all source nodes for training
+            else: # Use all source nodes for training if no target nodes in the early training stage
                 (nodes_1, nodes_2),(labels_1, labels_2) = \
                     self._forward_preprocessing_source(nodes_1, labels_1)
 
@@ -343,12 +309,9 @@ class GModule(torch.nn.Module):
                     torch.cat([nodes_1, nodes_2],dim=0),
                     torch.cat([labels_1, labels_2],dim=0)
                 )
-
-
             middle_head_loss.update({'node_loss': self.weight_nodes * node_loss})
 
             # STEP8: Generate Semantic-aware Node Affinity and Structure-aware Matching loss
-
             if self.matching_cfg != 'none':
                 matching_loss_affinity, affinity = self._forward_aff(nodes_1, nodes_2, labels_1, labels_2)
                 middle_head_loss.update({'mat_loss_aff': self.weight_matching * matching_loss_affinity })
@@ -357,9 +320,7 @@ class GModule(torch.nn.Module):
                     matching_loss_quadratic = self._forward_qu(edges_1.detach(), edges_2.detach(), affinity)
                     middle_head_loss.update({'mat_loss_qu':  matching_loss_quadratic})
 
-
             return features, middle_head_loss
-
 
     def _forward_preprocessing_source_target(self, nodes, labels, weights):
 
@@ -415,7 +376,6 @@ class GModule(torch.nn.Module):
             elif tg_indx.any():  # If there're no source nodes in this category, we complete it with hallucination nodes!
 
                 num_nodes = len(tg_nodes_c)
-
                 sr_nodes_c = self.sr_seed[c].unsqueeze(0).expand(num_nodes, 256)
 
                 if self.with_semantic_completion:
@@ -527,7 +487,6 @@ class GModule(torch.nn.Module):
 
             node_loss = F.cross_entropy(logits, labels,
                                         reduction='mean')
-
         else:  # Target domain
             if self.with_cond_cls:
                 sr_embeds = self.node_cls_middle(self.sr_seed)
@@ -543,7 +502,7 @@ class GModule(torch.nn.Module):
 
     def update_seed(self, sr_nodes, sr_labels, tg_nodes=None, tg_labels=None):
 
-        k = 20 # conduct clustering with a too-small number of nodes is somewhat meaningless
+        k = 20 # conduct clustering when we have enough graph nodes
         for cls in sr_labels.unique().long():
             bs = sr_nodes[sr_labels == cls].detach()
 
@@ -568,7 +527,6 @@ class GModule(torch.nn.Module):
                     seed_cls = self.tg_seed[cls]
                     sp = cluster.SpectralClustering(2, affinity='nearest_neighbors', n_jobs=-1,
                                                     assign_labels='kmeans', random_state=1234, n_neighbors=len(bs) // 2)
-
                     indx = sp.fit_predict(torch.cat([seed_cls[None, :], bs]).cpu().numpy())
                     indx = (indx == indx[0])[1:]
                     bs = bs[indx].mean(0)
@@ -584,7 +542,6 @@ class GModule(torch.nn.Module):
 
             M = self.InstNorm_layer(M[None, None, :, :])
             M = self.sinkhorn_rpm(M[:, 0, :, :], n_iters=20).squeeze().exp()
-            self.iteration+=1
 
             TP_mask = (matching_target == 1).float()
             indx = (M * TP_mask).max(-1)[1]
@@ -608,7 +565,6 @@ class GModule(torch.nn.Module):
         else:
             M = None
             matching_loss = 0
-
         return matching_loss, M
 
     def _forward_inference(self, images, features):
@@ -646,7 +602,7 @@ class GModule(torch.nn.Module):
         return locations
 
     def sinkhorn_rpm(self, log_alpha, n_iters=5, slack=True, eps=-1):
-        """ Run sinkhorn iterations to generate a near doubly stochastic matrix, where each row or column sum to <=1
+        ''' Run sinkhorn iterations to generate a near doubly stochastic matrix, where each row or column sum to <=1
 
         Args:
             log_alpha: log of positive matrix to apply sinkhorn normalization (B, J, K)
@@ -660,9 +616,7 @@ class GModule(torch.nn.Module):
         Modified from original source taken from:
             Learning Latent Permutations with Gumbel-Sinkhorn Networks
             https://github.com/HeddaCohenIndelman/Learning-Gumbel-Sinkhorn-Permutations-w-Pytorch
-        """
-
-        # Sinkhorn iterations
+        '''
         prev_alpha = None
         if slack:
             zero_pad = nn.ZeroPad2d((0, 1, 0, 1))
@@ -675,36 +629,30 @@ class GModule(torch.nn.Module):
                     log_alpha_padded[:, :-1, :] - (torch.logsumexp(log_alpha_padded[:, :-1, :], dim=2, keepdim=True)),
                     log_alpha_padded[:, -1, None, :]),  # Don't normalize last row
                     dim=1)
-
                 # Column normalization
                 log_alpha_padded = torch.cat((
                     log_alpha_padded[:, :, :-1] - (torch.logsumexp(log_alpha_padded[:, :, :-1], dim=1, keepdim=True)),
                     log_alpha_padded[:, :, -1, None]),  # Don't normalize last column
                     dim=2)
-
                 if eps > 0:
                     if prev_alpha is not None:
                         abs_dev = torch.abs(torch.exp(log_alpha_padded[:, :-1, :-1]) - prev_alpha)
                         if torch.max(torch.sum(abs_dev, dim=[1, 2])) < eps:
                             break
                     prev_alpha = torch.exp(log_alpha_padded[:, :-1, :-1]).clone()
-
             log_alpha = log_alpha_padded[:, :-1, :-1]
         else:
             for i in range(n_iters):
                 # Row normalization (i.e. each row sum to 1)
                 log_alpha = log_alpha - (torch.logsumexp(log_alpha, dim=2, keepdim=True))
-
                 # Column normalization (i.e. each column sum to 1)
                 log_alpha = log_alpha - (torch.logsumexp(log_alpha, dim=1, keepdim=True))
-
                 if eps > 0:
                     if prev_alpha is not None:
                         abs_dev = torch.abs(torch.exp(log_alpha) - prev_alpha)
                         if torch.max(torch.sum(abs_dev, dim=[1, 2])) < eps:
                             break
-                    prev_alpha = torch.exp(log_alpha).clone()
-
+                    prev_alpha = torch.exp(log_alpha).clone()              
         return log_alpha
 
     def dynamic_fc(self, features, kernel_par):
