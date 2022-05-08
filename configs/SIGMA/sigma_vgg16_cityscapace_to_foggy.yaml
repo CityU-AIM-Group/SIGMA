@@ -110,7 +110,7 @@ SOLVER:
   MIDDLE_HEAD:
     # BASE_LR: 0.0025 is the default setting. 
     # We reproduced the end-to-end training results with BASE_LR: 0.005 (43+ mAP)
-    BASE_LR: 0.0025
+    BASE_LR: 0.005
     STEPS:  (75000, 90000)
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
