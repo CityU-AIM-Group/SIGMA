@@ -223,6 +223,10 @@ class GModule(torch.nn.Module):
                 None, features_t, score_maps
             )
 
+            # to avoid the failure of extreme cases with limited bs
+            if nodes_1.size(0) < 6 or len(nodes_1.size()) == 1:
+                return features, middle_head_loss
+
             #  conduct node alignment to prevent overfit
             if self.with_node_dis and nodes_2 is not None and self.node_dis_place =='feat' :
                 nodes_rev = self.grad_reverse(torch.cat([nodes_1, nodes_2], dim=0))
