@@ -111,11 +111,11 @@ python tools/test_net.py \
 ```
 
 If you train the model from the scratch with a limited batchsize (batchsize = 2), you may need to do some modifications for a stable training:
-1. double the the training itertaions
+1. double your training itertaions
 2. set MODEL.ADV.GA_DIS_LAMBDA 0.1 
 3. careforally check if the node_loss continuely decreases
 
-we provide the reproduced results for City to Foggy (vgg16, e2e) to help you check if SIGMA works properly:
+we provide the reproduced results for City to Foggy (vgg16, e2e, unfinished training) to help you check if SIGMA works properly:
 | iterations | batchsize |LR (middle head)  | mAP	 | mAP@50 |  mAP@75 |	node_loss|
 | :----: | :----: | :----: |:-----:| :----: |:----: |:----: |
 | 2000  | 2 |0.0025| 6.8 |17.5|3.4| 0.3135|
