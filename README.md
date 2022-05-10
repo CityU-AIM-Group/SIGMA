@@ -35,7 +35,6 @@ We follow [EPM](https://github.com/chengchunhsu/EveryPixelMatters) to construct 
   - Extract the training set from *data_object_image_2.zip*, then move all images under `training/image_2/` to `KITTI/JPEGImages/` directory.
   - Extract the training and validation set from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` and `leftImg8bit/val/` to `Cityscapes/leftImg8bit/` directory.
 
-
 ```
 [DATASET_PATH]
 └─ Cityscapes
@@ -73,9 +72,9 @@ DATA_DIR = [$Your dataset root]
 
 ## Well-trained models
 We have provided lots of well-trained models at ([onedrive](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
-1) Kindly note that it is easy to get higher results than the reported ones with tailor-tuned hyperparameters.
+1) Kindly note that we can get higher results than the reported ones with tailor-tuned hyperparameters.
 2) We didn't tune the hyperparameters for ResNet-50, and it could be further improved.
-3) We have tested on C2F and S2F with end-to-end training, finding it can also achieve SOTA results, as mentioned in our appendix.
+3) We have tested on C2F and S2F with end-to-end (e2e) training and achieve similar resutls. Our config files are for e2e training.
 4) After correcting a default hyper-parameter, our S2C gives four mAP gains compared with the reported one, as explained in the config file.
 <!-- 4) As mentioned in the paper, we tried to obtain the best results with two-stage training, which will be provided in the future.  -->
 
@@ -90,13 +89,14 @@ We have provided lots of well-trained models at ([onedrive](https://portland-my.
 
 ## Get start
 
-Train the model from the scratch
+Train the model from the scratch with the default setting (batchsize = 4):
 ```
 python tools/train_net_da.py \
         --config-file configs/SIGMA/xxx.yaml \
 
 ```
-Test the well-trained model
+
+Test the well-trained model:
 ```
 python tools/test_net.py \
         --config-file configs/SIGMA/xxx.yaml \
@@ -110,12 +110,28 @@ python tools/test_net.py \
 
 ```
 
+If you train the model from the scratch with a limited batchsize (batchsize = 2), you may need to do some modifications for a stable training:
+1. double the the training itertaions
+2. set MODEL.ADV.GA_DIS_LAMBDA 0.1 
+3. careforally check if the node_loss continuely decreases
+
+we provide the reproduced results for City to Foggy (vgg16, e2e) to help you check if SIGMA works properly:
+| iterations | batchsize |LR (middle head)  | mAP	 | mAP@50 |  mAP@75 |	node_loss|
+| :----: | :----: | :----: |:-----:| :----: |:----: |:----: |
+| 2000  | 2 |0.0025| 6.8 |17.5|3.4| 0.3135|
+| 10000 | 2 |0.0025| 15.6 |32.3|12.8| 0.1291|
+| 20000 | 2 |0.0025| 20.0 |37.9|18.8| 0.0834|
+| 40000 | 2 |0.0025| 20.6 |40.0|18.9| 0.0415|
+| 50000 | 2 |0.0025| 22.3 |42.1|20.5| 0.0351|
+
+We don't recommend to train with a too small batchsize, since the cross-image graph can't discover enough nodes for a image batch. 
+
+
 
 ## Citation 
 
 If you think this work is helpful for your project, please give it a star and citation:
 ```
-
 @inproceedings{li2022sigma,
   title={SIGMA: Semantic-complete Graph Matching for Domain Adaptive Object Detection},
   author={Li, Wuyang and Liu, Xinyu and Yuan, Yixuan},
