@@ -110,12 +110,15 @@ python tools/test_net.py \
 
 ```
 
-If you train the model from the scratch with a limited batchsize (batchsize = 2), you may need to do some modifications for a stable training:
-1. double your training itertaions
-2. set MODEL.ADV.GA_DIS_LAMBDA 0.1 
-3. careforally check if the node_loss continuely decreases
 
-we provide the reproduced results for City to Foggy (vgg16, e2e, unfinished training) to help you check if SIGMA works properly:
+## Solutions for Limited GPU Memory
+bs=2 can work well on 12GB GPU and bs=4 can work well on 32GB GPU. If you meet the cuda out of memory error, you can try one/many of the followed operations:
+1. reuduce your batch-size to 2 (1 is not recommended) and double your training iterations
+2. disable the one-to-one (o2o) matching by setting MODEL.MIDDLE_HEAD.GM.MATCHING_CFG 'none'
+3. reduce the sampled node number MODEL.MIDDLE_HEAD.GM.NUM_NODES_PER_LVL_SR and MODEL.MIDDLE_HEAD.GM.NUM_NODES_PER_LVL_TG, e.g., from 100 to 50
+
+Then, as most of our main experimensts are conducted with bs=4, we show the reproduced results for City to Foggy with bs=2 (vgg16, e2e, unfinished training) to help you check if SIGMA works properly with limited batch-size. We don't recommend to train with a too small batchsize, since the cross-image graph can't discover enough nodes for a image batch. If you use bs=1, you may get similar results with a further doubled iterations.
+
 | iterations | batchsize |LR (middle head)  | mAP	 | mAP@50 |  mAP@75 |	node_loss|
 | :----: | :----: | :----: |:-----:| :----: |:----: |:----: |
 | 2000  | 2 |0.0025| 6.8 |17.5|3.4| 0.3135|
@@ -124,7 +127,7 @@ we provide the reproduced results for City to Foggy (vgg16, e2e, unfinished trai
 | 40000 | 2 |0.0025| 20.6 |40.0|18.9| 0.0415|
 | 50000 | 2 |0.0025| 22.3 |42.1|20.5| 0.0351|
 
-We don't recommend to train with a too small batchsize, since the cross-image graph can't discover enough nodes for a image batch. 
+
 
 
 
