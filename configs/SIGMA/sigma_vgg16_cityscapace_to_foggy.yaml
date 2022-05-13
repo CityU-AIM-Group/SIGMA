@@ -100,28 +100,28 @@ SOLVER:
   MAX_ITER: 100000
   # 4 for source and 4 for target
   IMS_PER_BATCH: 4 # you can use bs=2 for 2080Ti
-  CHECKPOINT_PERIOD: 100000
+  CHECKPOINT_PERIOD: 100000 
   
   BACKBONE:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
   MIDDLE_HEAD:
     # BASE_LR: 0.0025 is the default setting. 
     # We reproduced the end-to-end training results with BASE_LR: 0.005 (43+ mAP)
     BASE_LR: 0.005
-    STEPS:  (75000, 90000)
+    STEPS:  (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
     PLABEL_TH: (0.5, 1.0)  # if the cls score > 0.5, we sample this node
   FCOS:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
   DIS:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"

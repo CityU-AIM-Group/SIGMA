@@ -103,23 +103,23 @@ SOLVER:
   #
   BACKBONE:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
   MIDDLE_HEAD:
     BASE_LR: 0.005
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
     PLABEL_TH: (0.5, 1.0)
   FCOS:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
   #
   DIS:
     BASE_LR: 0.0025
-    STEPS: (75000, 90000)
+    STEPS: (90000, )
     WARMUP_ITERS: 1000
     WARMUP_METHOD: "constant"
