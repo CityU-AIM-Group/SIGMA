@@ -4,8 +4,8 @@
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
-Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
 
+Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
 
 ## Installation
 
@@ -61,7 +61,6 @@ Step 2: change the data root for your dataset at [paths_catalog.py](https://gith
 DATA_DIR = [$Your dataset root]
 ```
 
-
 ## Tutorials for this project
 1) We provide super detailed code comments in [sigma_vgg16_cityscapace_to_foggy.yaml](https://github.com/CityU-AIM-Group/SIGMA/blob/main/configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml).
 2) We modify the [trainer](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/engine/trainer.py) to meet the requirements of SIGMA.
@@ -88,28 +87,31 @@ We have provided lots of well-trained models at ([onedrive](https://portland-my.
 | KITTI -> Cityscapes | VGG16 | 22.6 |46.6 |20.0 |kitti_to_city_vgg16_46.45_mAP.pth|
 
 ## Get start
-
 Train the model from the scratch with the default setting (batchsize = 4):
 ```
 python tools/train_net_da.py \
         --config-file configs/SIGMA/xxx.yaml \
 
 ```
-
 Test the well-trained model:
 ```
 python tools/test_net.py \
         --config-file configs/SIGMA/xxx.yaml \
         MODEL.WEIGHT well_trained_models/xxx.pth
-
-# For example: test cityscapes to foggy cityscapes with ResNet50 backbone.
-
+```
+For example: test cityscapes to foggy cityscapes with ResNet50 backbone.
+```
 python tools/test_net.py \
          --config-file configs/SIGMA/sigma_res50_cityscapace_to_foggy.yaml \
          MODEL.WEIGHT well_trained_models/city_to_foggy_res50_44.26_mAP.pth
 
 ```
-
+## TODO
+What we will provide in the extended journal version?
+- More effective graph-related operations.
+- Unifying the popular [DA-FasterRCNN benchamrk](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch) in this project.
+- Faster-RCNN based implementation (baseline: 38.3 mAP; ours: 43.5 mAP)
+- More benchmark configs, models, and results, e.g., Pascal2Clipart (46.5 mAP)
 
 ## Solutions for Limited GPU Memory
 bs=2 can work well on 12GB GPU and bs=4 can work well on 32GB GPU. If you meet the cuda out of memory error, you can try one/many of the followed operations:
@@ -117,7 +119,7 @@ bs=2 can work well on 12GB GPU and bs=4 can work well on 32GB GPU. If you meet t
 2. disable the one-to-one (o2o) matching by setting MODEL.MIDDLE_HEAD.GM.MATCHING_CFG 'none'
 3. reduce the sampled node number MODEL.MIDDLE_HEAD.GM.NUM_NODES_PER_LVL_SR and MODEL.MIDDLE_HEAD.GM.NUM_NODES_PER_LVL_TG, e.g., from 100 to 50
 
-Then, as most of our main experimensts are conducted with bs=4, we show the reproduced results for City to Foggy with bs=2 (vgg16, e2e, unfinished training) to help you check if SIGMA works properly with limited batch-size. We don't recommend to train with a too small batchsize, since the cross-image graph can't discover enough nodes for a image batch. If you use bs=1, you may get similar results with a further doubled iterations.
+Then, we show the reproduced results for City to Foggy with bs=2 (vgg16, e2e, unfinished training) to help you check if SIGMA works properly with limited batch-size. We don't recommend to train with a too small batchsize, since the cross-image graph can't discover enough nodes for a image batch. If you use bs=1, you may get similar results with a further doubled iterations.
 
 | iterations | batchsize |LR (middle head)  | mAP	 | mAP@50 |  mAP@75 |	node_loss|
 | :----: | :----: | :----: |:-----:| :----: |:----: |:----: |
@@ -128,21 +130,26 @@ Then, as most of our main experimensts are conducted with bs=4, we show the repr
 | 50000 | 2 |0.0025| 22.3 |42.1|20.5| 0.0351|
 
 
-
-
-
 ## Citation 
 
 If you think this work is helpful for your project, please give it a star and citation:
-```
+```BibTeX
 @inproceedings{li2022sigma,
   title={SIGMA: Semantic-complete Graph Matching for Domain Adaptive Object Detection},
   author={Li, Wuyang and Liu, Xinyu and Yuan, Yixuan},
-  booktitle={IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  booktitle={CVPR},
   year={2022}
 }
 ```
-
+Relevant project:
+```BibTeX
+@inproceedings{li2022scan,
+  title={SCAN: Cross Domain Object Detection with Semantic Conditioned Adaptation},
+  author={Li, Wuyang and Liu, Xinyu and Yao, Xiwen and Yuan, Yixuan},
+  booktitle={AAAI},
+  year={2022}
+}
+```
 
 ## Contact
 
@@ -151,7 +158,7 @@ E-mail: wuyangli2-c@my.cityu.edu.hk
 
 ## Acknowledgements 
 
-This work is based on [SCAN (AAAI'22 ORAL)](https://github.com/CityU-AIM-Group/SCAN) and [EPM (ECCV20)](https://github.com/chengchunhsu/EveryPixelMatters). 
+This work is based on [SCAN (AAAI'22)](https://github.com/CityU-AIM-Group/SCAN) and [EPM (ECCV20)](https://github.com/chengchunhsu/EveryPixelMatters). 
 
 The implementation of our anchor-free detector is from [FCOS](https://github.com/tianzhi0549/FCOS/tree/f0a9731dac1346788cc30d5751177f2695caaa1f).
 
