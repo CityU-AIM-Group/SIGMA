@@ -82,7 +82,8 @@ The well-trained models are available at: ([onedrive](https://portland-my.sharep
 2) E2E indicates end-to-end training for better reproducibility. Our config files are used for end-to-end training.
 3) Two-stage/ longer training and turning learning rate will make the results more stable and get higer mAP/AP75.
 4) After correcting a default hyper-parameter (as explained in the config file), Sim10k to City achieves better results than the reported ones.
-5) You can set MODEL.MIDDLE_HEAD.GM.WITH_CLUSTER_UPDATE False to accelerate training greatly, which gives ignorable performance drops. Besides, results will be stable after the learning rate decline (in the training schedule).
+5) You can set MODEL.MIDDLE_HEAD.GM.WITH_CLUSTER_UPDATE False to accelerate training greatly with ignorable performance drops. You'd better also make this change for bs=2 since we found it more friendly for the small batch-size training.
+6) Results will be stable after the learning rate decline (in the training schedule).
 
 | Source| Target| E2E|Metric | Backbone |   mAP	 | AP@50 |  AP@75 |	 file |		
 | :-----:|:----:|:----: | :----: | :----:| :----: |:-----:| :----: | :----: | 
