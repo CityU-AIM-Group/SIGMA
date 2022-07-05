@@ -75,6 +75,9 @@ DATA_DIR = [$Your dataset root]
 
 # Well-trained models
 
+The ImageNet pretrained VGG-16 backbone (w/o BN) is available at [link](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/ESOgJbvystdDiGbMLiGnL50BvxxwSJ3LjR22yxo9-OdTOA?e=5cA2xY). You can use it if you cannot download the model through the link in the config file.
+
+
 ## Conference verison: SIGMA (graph learning/matching)
 The well-trained models are available at: ([onedrive](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eh94jXa1NSxAilUAE68-T0MBckTxK3Tm-ggmzZRJTHNHww?e=B30DNw)).
 
