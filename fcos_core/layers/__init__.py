@@ -1,6 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 import torch
-
 from .batch_norm import FrozenBatchNorm2d
 from .misc import Conv2d
 from .misc import ConvTranspose2d
@@ -22,9 +21,8 @@ from .softmax_cross_entropy import CELoss
 from .contrastive_loss import SupConLossWithPrototypeDA
 from .cosine_loss import CosineLoss
 from .sigmoid_focal_loss_wbg import BCEFocalLoss, FocalLoss
-from .KL_loss import KLLoss
 from .wassdistance import SinkhornDistance
-from .transformer import MultiHeadAttention,CrossGraph
+from .transformer import MultiHeadAttention, CrossGraph
 from .sinkhorn import Sinkhorn
 from .mean_shift import MeanShift_GPU
 from .affinity_layer import Affinity
