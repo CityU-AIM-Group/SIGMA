@@ -19,9 +19,9 @@ MODEL:
       # matching cfg
       MATCHING_LOSS_CFG: 'MSE'
       MATCHING_CFG: 'o2o'
-      
       WITH_SCORE_WEIGHT: False
       WITH_NODE_DIS: True
+      
       # node sampling
       NUM_NODES_PER_LVL_SR: 100
       NUM_NODES_PER_LVL_TG: 100
@@ -97,7 +97,7 @@ SOLVER:
   INITIAL_AP50: 35
   WEIGHT_DECAY: 0.0001
   MAX_ITER: 100000
-  # 2 for source and 2 for target
+  # 1 for source and 1 for target
   IMS_PER_BATCH: 2
   CHECKPOINT_PERIOD: 100000
   #

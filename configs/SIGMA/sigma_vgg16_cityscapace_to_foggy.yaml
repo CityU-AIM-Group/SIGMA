@@ -98,10 +98,9 @@ SOLVER:
   INITIAL_AP50: 35 # saving checkpoints if validation mAP > INITIAL_AP50
   WEIGHT_DECAY: 0.0001
   MAX_ITER: 100000
-  # 4 for source and 4 for target
+  # 2 for source and 2 for target
   IMS_PER_BATCH: 4 # you can use bs=2 for 2080Ti
   CHECKPOINT_PERIOD: 100000 
-  
   BACKBONE:
     BASE_LR: 0.0025
     STEPS: (90000, )

@@ -6,7 +6,7 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
-from .loss import make_fcos_loss_evaluator, make_prototype_evaluator
+from .loss import make_prototype_evaluator
 from fcos_core.layers import  BCEFocalLoss, MultiHeadAttention, Affinity
 import sklearn.cluster as cluster
 from fcos_core.modeling.discriminator.layer import GradientReversal

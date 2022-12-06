@@ -3,7 +3,6 @@ import torch.nn as nn
 import numpy as np
 
 class dot_attention(nn.Module):
-    """ 点积注意力机制"""
 
     def __init__(self, attention_dropout=0.0):
         super(dot_attention, self).__init__()
@@ -13,17 +12,15 @@ class dot_attention(nn.Module):
     def forward(self, q, k, v, scale=None, attn_mask=None):
         attention = torch.bmm(q, k.transpose(1, 2))
         if scale:
-            attention = attention * scale        # 是否设置缩放
+            attention = attention * scale        
         if attn_mask:
-            attention = attention.masked_fill(attn_mask, -np.inf)     # 给需要mask的地方设置一个负无穷。
-
+            attention = attention.masked_fill(attn_mask, -np.inf)     
         attention = self.softmax(attention)
         attention = self.dropout(attention)
         context = torch.bmm(attention, v)
         return context, attention
 
 class MultiHeadAttention(nn.Module):
-    """ 多头自注意力"""
     def __init__(self, model_dim=256, num_heads=4, dropout=0.0, version='v2'):
         super(MultiHeadAttention, self).__init__()
 
@@ -43,18 +40,13 @@ class MultiHeadAttention(nn.Module):
     def forward(self, key, value, query, attn_mask=None):
 
         if self.version == 'v2':
-
             B =1
             key = key.unsqueeze(1)
             value = value.unsqueeze(1)
             query = query.unsqueeze(1)
             residual = query
-
-
             dim_per_head = self.dim_per_head
             num_heads = self.num_heads
-
-
             key = self.linear_k(key)
             value = self.linear_v(value)
             query = self.linear_q(query)
@@ -70,12 +62,10 @@ class MultiHeadAttention(nn.Module):
             output = self.linear_final(context)
             # dropout
             output = self.dropout(output)
-
             output = self.layer_norm(residual + output)
             # output = residual + output
 
-        elif self.version == 'v1':
-
+        elif self.version == 'v1': # some difference about the place of torch.view fuction
             key = key.unsqueeze(0)
             value = value.unsqueeze(0)
             query = query.unsqueeze(0)
@@ -93,36 +83,23 @@ class MultiHeadAttention(nn.Module):
             value = value.view(batch_size * num_heads, -1, dim_per_head)
             query = query.view(batch_size * num_heads, -1, dim_per_head)
 
-
             if attn_mask:
                 attn_mask = attn_mask.repeat(num_heads, 1, 1)
-
-            # 缩放点击注意力机制
             scale = (key.size(-1) // num_heads) ** -0.5
             context, attention = self.dot_product_attention(query, key, value, scale, attn_mask)
-
             context = context.view(batch_size, -1, dim_per_head * num_heads)
-
             output = self.linear_final(context)
-
-
             output = self.dropout(output)
             output = self.layer_norm(residual + output)
 
-
         return output.squeeze(), attention.squeeze()
 
-
-
-
 class CrossGraph(nn.Module):
-    """ 多头自注意力"""
+    """ This class hasn't been used"""
     def __init__(self, model_dim=256,  dropout=0.0,):
         super(CrossGraph, self).__init__()
 
 
-        self.linear_edge = nn.Linear(model_dim, model_dim)
-        # self.linear_edge2 = nn.Linear(model_dim,model_dim)
         self.linear_node1 = nn.Linear(model_dim,model_dim)
         self.linear_node2 = nn.Linear(model_dim,model_dim)
 
@@ -130,7 +107,7 @@ class CrossGraph(nn.Module):
 
         self.linear_final = nn.Linear(model_dim, model_dim)
         self.dropout = nn.Dropout(dropout)
-        self.layer_norm = nn.LayerNorm(model_dim)         # LayerNorm 归一化。
+        self.layer_norm = nn.LayerNorm(model_dim)         
 
 
     def forward(self, node_1, node_2,  attn_mask=None):
@@ -154,8 +131,6 @@ class CrossGraph(nn.Module):
 
         node_1 = self.dropout(node_1)
         node_2  = self.dropout(node_2)
-
-        # 添加残差层和正则化层。
         node_1 = self.layer_norm(node_1_r + node_1)
 
         node_2 = self.layer_norm(node_2_r + node_2)

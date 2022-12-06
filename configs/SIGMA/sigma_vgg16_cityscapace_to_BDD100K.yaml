@@ -19,8 +19,8 @@ MODEL:
       MATCHING_LOSS_CFG: 'MSE'
       MATCHING_CFG: 'o2o'
       WITH_SCORE_WEIGHT: False
-
       WITH_NODE_DIS: True
+      
       # node sampling
       NUM_NODES_PER_LVL_SR: 100
       NUM_NODES_PER_LVL_TG: 100
@@ -37,8 +37,6 @@ MODEL:
       WITH_QUADRATIC_MATCHING: True
       WITH_CLUSTER_UPDATE: True
       WITH_CTR: False
-
-
       WITH_COMPLETE_GRAPH: True
       WITH_DOMAIN_INTERACTION: True
 
@@ -80,7 +78,7 @@ TEST:
   DETECTIONS_PER_IMG: 100 # fpn_post_nms_top_n  (default=100)
   MODE: 'common'
 DATASETS:
-  TRAIN_SOURCE: ("cs_bdd100k_train_cocostyle", )
+  TRAIN_SOURCE: ("cityscapes_train_cocostyle", )
   TRAIN_TARGET: ("bdd100k_train_cocostyle", )
   TEST: ("bdd100k_val_cocostyle", )
 

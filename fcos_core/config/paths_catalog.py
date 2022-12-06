@@ -205,20 +205,13 @@ class DatasetCatalog(object):
         },
 
         "bdd100k_train_cocostyle": {
-            "img_dir": "/media/wuyang/scratch/data/bdd100k_images_100k/bdd100k_data/images/100k/train",
-            "ann_file": "/media/wuyang/scratch/data/bdd100k_images_100k/bdd_coco_train_da.json"
+            "img_dir": "bdd100k_images_100k/bdd100k_data/images/100k/train",
+            "ann_file": "data/bdd100k_images_100k/bdd100k_train_da.json"
         },
         "bdd100k_val_cocostyle": {
-            "img_dir": "/media/wuyang/scratch/data/bdd100k_images_100k/bdd100k_data/images/100k/val",
-            "ann_file": "/media/wuyang/scratch/data/bdd100k_images_100k/bdd_val2.json"
+            "img_dir": "bdd100k_images_100k/bdd100k_data/images/100k/val",
+            "ann_file": "bdd100k_images_100k/bdd100k_val_da.json"
         },
-        "cs_bdd100k_train_cocostyle": {
-            "img_dir": "Cityscapes/leftImg8bit/train",
-            "ann_file": "/media/wuyang/scratch/data/bdd100k_images_100k/cityscapes_coco_train_da.json"
-        },
-
-
-
     }
 
     @staticmethod

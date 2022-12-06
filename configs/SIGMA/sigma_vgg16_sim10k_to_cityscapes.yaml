@@ -20,9 +20,9 @@ MODEL:
       # matching cfg
       MATCHING_LOSS_CFG: 'MSE'
       MATCHING_CFG: 'o2o'
-      
       WITH_SCORE_WEIGHT: False
       WITH_NODE_DIS: True
+      
       # node sampling
       NUM_NODES_PER_LVL_SR: 100
       NUM_NODES_PER_LVL_TG: 100

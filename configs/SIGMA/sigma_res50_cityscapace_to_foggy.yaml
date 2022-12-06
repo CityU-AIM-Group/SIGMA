@@ -32,13 +32,11 @@ MODEL:
       NODE_LOSS_WEIGHT: 1.0
       NODE_DIS_WEIGHT: 0.1
       NODE_DIS_LAMBDA:  0.02
-#      NODE_DIS_PLACE: 'intra'
 
       WITH_SEMANTIC_COMPLETION: True
       WITH_QUADRATIC_MATCHING: True
       WITH_CLUSTER_UPDATE: True
       WITH_CTR: False # use cls and ctr maps for node sampling
-
       WITH_COMPLETE_GRAPH: True
       WITH_DOMAIN_INTERACTION: True
 
