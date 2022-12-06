@@ -5,7 +5,7 @@
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
 
-Welcome to have a look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
+Welcome to have a quick look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
 
 # Installation
 
@@ -15,29 +15,33 @@ If you have any problem in terms of installation, feel free to screenshot your i
 
 # Data preparation
 
-Step 1: Format three benchmark datasets. (BDD100k is also available)
+Step 1: Format four benchmark datasets. 
 
 We follow [EPM](https://github.com/chengchunhsu/EveryPixelMatters) to construct the training and testing set by three following settings. Annotation files are available at [onedrive](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Eq7hy8iTGBFGpSz19mlSUN0BhIf9dL_oAdONwmPCAn-BRg?e=n5aNyU).
 
-Cityscapes -> Foggy Cityscapes
+**Cityscapes -> Foggy Cityscapes**
   - Download Cityscapes and Foggy Cityscapes dataset from the [link](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *leftImg8bit_trainvaltest.zip* for Cityscapes and *leftImg8bit_trainvaltest_foggy.zip* for Foggy Cityscapes.
   - Download and extract the converted annotation from the following links: [Cityscapes and Foggy Cityscapes (COCO format)](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/EZRXq3_5R_RKpAuTwjyYpWYBTjgKWZNuEjsgoYky31a96g?e=hfWAyl)
 <!--   - (https://drive.google.com/file/d/1LRNXW2Wee8tjuxc5gjVsFQv49vA_SBtk/view?usp=sharing). -->
   - Extract the training sets from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` to `Cityscapes/leftImg8bit/` directory.
   - Extract the training and validation set from *leftImg8bit_trainvaltest_foggy.zip*, then move the folder `leftImg8bit_foggy/train/` and `leftImg8bit_foggy/val/` to `Cityscapes/leftImg8bit_foggy/` directory.
   
- Sim10k -> Cityscapes (class car only)
+ **Sim10k -> Cityscapes** (class car only)
   - Download Sim10k dataset and Cityscapes dataset from the following links: [Sim10k](https://fcav.engin.umich.edu/projects/driving-in-the-matrix) and [Cityscapes](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *repro_10k_images.tgz* and *repro_10k_annotations.tgz* for Sim10k and *leftImg8bit_trainvaltest.zip* for Cityscapes.
   - Download and extract the converted annotation from the following links: [Sim10k (VOC format)](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/EQt48_9D1XtIiVE9GK3hFIYBQNOVSW4OfdZPtQAcCkS7bw?e=8NCweC) and [Cityscapes (COCO format)](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/EZRXq3_5R_RKpAuTwjyYpWYBTjgKWZNuEjsgoYky31a96g?e=hfWAyl)
 <!--   - (https://drive.google.com/file/d/1LRNXW2Wee8tjuxc5gjVsFQv49vA_SBtk/view?usp=sharing). -->
   - Extract the training set from *repro_10k_images.tgz* and *repro_10k_annotations.tgz*, then move all images under `VOC2012/JPEGImages/` to `Sim10k/JPEGImages/` directory and move all annotations under `VOC2012/Annotations/` to `Sim10k/Annotations/`.
   - Extract the training and validation set from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` and `leftImg8bit/val/` to `Cityscapes/leftImg8bit/` directory.
   
-KITTI -> Cityscapes (class car only)
+**KITTI -> Cityscapes** (class car only)
   - Download KITTI dataset and Cityscapes dataset from the following links: [KITTI](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d) and [Cityscapes](https://www.cityscapes-dataset.com/downloads/). Particularly, we use *data_object_image_2.zip* for KITTI and *leftImg8bit_trainvaltest.zip* for Cityscapes.
   - Download and extract the converted annotation from the following links: [KITTI (VOC format)](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/EWqP3z9BpVNLlG3a_qGBO1EBNO7XO4GGaDlipixnlgc7rQ?e=LPBV5j) and [Cityscapes (COCO format)](https://portland-my.sharepoint.com/:u:/g/personal/wuyangli2-c_my_cityu_edu_hk/EZRXq3_5R_RKpAuTwjyYpWYBTjgKWZNuEjsgoYky31a96g?e=hfWAyl).
   - Extract the training set from *data_object_image_2.zip*, then move all images under `training/image_2/` to `KITTI/JPEGImages/` directory.
   - Extract the training and validation set from *leftImg8bit_trainvaltest.zip*, then move the folder `leftImg8bit/train/` and `leftImg8bit/val/` to `Cityscapes/leftImg8bit/` directory.
+
+**Cityscapes -> BDD100k** (7-class evaluation w/o train)
+  - You can use the uploaded data and coco annotations form this link [BDD100k (reformatted)](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/Ej2y4c-0afFFmXGdgOT9z-sBHJVxKcMTyN25UjDdUAw3ZQ?e=RKcWVD), which correct the inconsistent class names and remove unused images. 
+  - The official website: [BDD100k](https://bdd-data.berkeley.edu/). 
 
 ```
 [DATASET_PATH]
@@ -57,6 +61,12 @@ KITTI -> Cityscapes (class car only)
    └─ Annotations
    └─ ImageSets
    └─ JPEGImages
+└─ BDD100k
+   └─ cocoAnnotations
+   └─ images
+      └─ train
+      └─ val
+
 ```
 
 Step 2: change the data root for your dataset at [paths_catalog.py](https://github.com/CityU-AIM-Group/SIGMA/blob/main/fcos_core/config/paths_catalog.py).
@@ -100,7 +110,7 @@ The well-trained models are available at: ([onedrive](https://portland-my.sharep
 | KITTI | City | |COCO|V-16 | 22.6 |46.6 |20.0 |kitti_to_city_vgg16_46.45_mAP.pth|
 
 
-## Extended Verison: SIGMA++ (hypergraph learning/matching)
+## Extended Verison: SIGMA++ (hypergraph learning/matching) (will be released after the acceptance)
 1) More results and models will be given.
 2) E2E training will achieve satisfactory results for better reproducibility.
 3) A faster-rcnn based implementation will be given.
@@ -132,11 +142,11 @@ python tools/test_net.py \
         --config-file configs/SIGMA/xxx.yaml \
         MODEL.WEIGHT well_trained_models/xxx.pth
 ```
-For example: test cityscapes to foggy cityscapes with ResNet50 backbone.
+For example: test cityscapes to foggy cityscapes with VGG16 backbone.
 ```
 python tools/test_net.py \
-         --config-file configs/SIGMA/sigma_res50_cityscapace_to_foggy.yaml \
-         MODEL.WEIGHT well_trained_models/city_to_foggy_res50_44.26_mAP.pth
+         --config-file configs/SIGMA/sigma_vgg16_kitti_to_cityscapes.yaml \
+         MODEL.WEIGHT well_trained_models/city_to_foggy_vgg16_43.58_mAP.pth
 
 ```
 # TODO

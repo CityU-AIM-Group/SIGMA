@@ -205,12 +205,12 @@ class DatasetCatalog(object):
         },
 
         "bdd100k_train_cocostyle": {
-            "img_dir": "bdd100k_images_100k/bdd100k_data/images/100k/train",
-            "ann_file": "data/bdd100k_images_100k/bdd100k_train_da.json"
+            "img_dir": "BDD100k/images/train",
+            "ann_file": "BDD100k/cocoAnnotations/bdd100k_train_da.json"
         },
         "bdd100k_val_cocostyle": {
-            "img_dir": "bdd100k_images_100k/bdd100k_data/images/100k/val",
-            "ann_file": "bdd100k_images_100k/bdd100k_val_da.json"
+            "img_dir": "BDD100k/images/val",
+            "ann_file": "BDD100k/cocoAnnotations/bdd100k_val_da.json"
         },
     }
 
