@@ -1,18 +1,15 @@
-import math
+# --------------------------------------------------------
+# SCAN: Cross-domain Object Detection with Semantic Conditioned Adaptation 
+# Written by Wuyang Li
+# This file covers the core operation on the feature maps for domain adaptation
+# https://github.com/CityU-AIM-Group/SCAN/blob/main/fcos_core/modeling/rpn/fcos/condgraph.py
+# --------------------------------------------------------
+
 import torch
 import torch.nn.functional as F
 from torch import nn
-
-from .inference import make_fcos_postprocessor
-from .loss import make_fcos_loss_evaluator, make_prototype_evaluator, PrototypeComputation
-from fcos_core.layers import SigmoidFocalLoss, FocalLoss, CosineLoss, BCEFocalLoss, KLLoss,MultiHeadAttention
-from fcos_core.layers import Scale
-
-import matplotlib.pyplot as plt
-import ipdb
-import os
-import numpy as np
-
+from .loss import make_fcos_loss_evaluator, make_prototype_evaluator
+from fcos_core.layers import FocalLoss, BCEFocalLoss
 eps = 1e-8
 INF = 1e10
 
