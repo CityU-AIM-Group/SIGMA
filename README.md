@@ -111,9 +111,21 @@ The well-trained models are available at: ([onedrive](https://portland-my.sharep
 
 
 ## Extended Verison: SIGMA++ (hypergraph learning/matching) (will be released after the acceptance)
-1) More results and models will be given.
-2) E2E training will achieve satisfactory results for better reproducibility.
-3) A faster-rcnn based implementation will be given.
+
+
+Faster RCNN C4 based implementation: R50, City to Foggy:
+
+Method | AP@50:95 | AP@50| AP@75 | APs |APm |APl|
+| :-----:| :-----:|:----:| :----: | :----:| :----: |:-----:| 
+FRCNN w GA| 19.3 | 38.4  |18.2 | 2.0 | 17.3|  40.7|
+[SA-DAF](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch)  | 20.8  | 41.1  | 19.4  | 2.3  | 18.5  | 43.9  |
+SIGMA++ | 23.2  | 43.5  |21.0  |2.4  |20.7  |47.0 |
+
+
+
+
+FCOS-based implementation:
+
 
 | Source| Target|E2E| Metric | Backbone |   mAP	 | AP@50 |  AP@75 |	 link |		
 | :-----:| :-----:|:----:| :----: | :----:| :----: |:-----:| :----: | :----: | 
@@ -145,7 +157,7 @@ python tools/test_net.py \
 For example: test cityscapes to foggy cityscapes with VGG16 backbone.
 ```
 python tools/test_net.py \
-         --config-file configs/SIGMA/sigma_vgg16_kitti_to_cityscapes.yaml \
+         --config-file configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml \
          MODEL.WEIGHT well_trained_models/city_to_foggy_vgg16_43.58_mAP.pth
 
 ```
