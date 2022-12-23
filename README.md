@@ -1,13 +1,15 @@
-# [SIGMA: Semantic-complete Graph Matching For Domain Adaptive Object Detection (CVPR-22 ORAL)](https://arxiv.org/pdf/2203.06398.pdf)
+# [SIGMA : Semantic-complete Graph Matching For Domain Adaptive Object Detection (CVPR-22 ORAL)](https://arxiv.org/pdf/2203.06398.pdf)
 
 [[Arxiv](https://arxiv.org/pdf/2203.06398.pdf)] [[知乎](https://zhuanlan.zhihu.com/p/492956292)]
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
-
-Welcome to have a quick look at our previous work [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
+![image](https://github.com/CityU-AIM-Group/SIGMA/blob/main/matching_visualization.png)
 
 # Installation
+
+
+Welcome to have a quick look at our previous project [SCAN](https://github.com/CityU-AIM-Group/SCAN) (AAAI'22 ORAL), which is the foundation of this work. 
 
 Check [INSTALL.md](https://github.com/CityU-AIM-Group/SIGMA/blob/main/INSTALL.md) for installation instructions.
 
@@ -121,11 +123,7 @@ FRCNN w GA| 19.3 | 38.4  |18.2 | 2.0 | 17.3|  40.7|
 [SA-DAF](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch)  | 20.8  | 41.1  | 19.4  | 2.3  | 18.5  | 43.9  |
 SIGMA++ | 23.2  | 43.5  |21.0  |2.4  |20.7  |47.0 |
 
-
-
-
 FCOS-based implementation:
-
 
 | Source| Target|E2E| Metric | Backbone |   mAP	 | AP@50 |  AP@75 |	 link |		
 | :-----:| :-----:|:----:| :----: | :----:| :----: |:-----:| :----: | :----: | 
