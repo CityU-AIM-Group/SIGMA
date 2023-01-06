@@ -1,4 +1,4 @@
-## [SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection (TPAMI 2023)](./assets/manuscript.pdf)
+# [SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection (TPAMI 2023)](./assets/manuscript.pdf)
 
 [[Manuscript](./assets/manuscript.pdf)] [[知乎](https://zhuanlan.zhihu.com/p/492956292)]
 
@@ -110,8 +110,7 @@ We mainly appreciate for these good projects and their authors' hard-working.
 - The implementation of our anchor-free detector is from [FCOS](https://github.com/tianzhi0549/FCOS/tree/f0a9731dac1346788cc30d5751177f2695caaa1f), which highly relies on [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark).
 - The style-transferred data is from [D_adapt](https://github.com/thuml/Transfer-Learning-Library/tree/dev-tllib/examples/domain_adaptation/object_detection). 
 - The faster-rcnn-based implementation is based on [DA-FRCNN](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch). 
-
-
+- The hypergraph convolution is based on [HGCN](https://github.com/iMoonLab/HGNN)
 
 ## 📒 Abstract
 
