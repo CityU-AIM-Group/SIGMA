@@ -19,12 +19,16 @@ def evaluate(dataset, predictions, output_folder, **kwargs):
         dataset=dataset, predictions=predictions, output_folder=output_folder, **kwargs
     )
     if isinstance(dataset, datasets.COCODataset):
-        return coco_evaluation(**args)
-    elif isinstance(dataset, datasets.PascalVOCDataset):
-        return voc_evaluation(**args)
+        return coco_validation(**args)
     else:
-        dataset_name = dataset.__class__.__name__
-        raise NotImplementedError("Unsupported dataset type {}.".format(dataset_name))
+        return voc_evaluation(**args)
+    # if isinstance(dataset, datasets.COCODataset):
+    #     return coco_evaluation(**args)
+    # elif isinstance(dataset, datasets.PascalVOCDataset):
+    #     return voc_evaluation(**args)
+    # else:
+    #     dataset_name = dataset.__class__.__name__
+    #     raise NotImplementedError("Unsupported dataset type {}.".format(dataset_name))
 
 def validate(dataset, predictions, output_folder, **kwargs):
     """evaluate dataset using different methods based on dataset type.
@@ -42,9 +46,12 @@ def validate(dataset, predictions, output_folder, **kwargs):
     )
     if isinstance(dataset, datasets.COCODataset):
         return coco_validation(**args)
-    elif isinstance(dataset, datasets.PascalVOCDataset):
-        assert "unsupport for sVOC format"
-        return voc_evaluation(**args)
     else:
-        dataset_name = dataset.__class__.__name__
-        raise NotImplementedError("Unsupported dataset type {}.".format(dataset_name))
+        return voc_evaluation(**args)
+
+    # elif isinstance(dataset, datasets.PascalVOCDataset):
+    #     assert "unsupport for sVOC format"
+    #     return voc_evaluation(**args)
+    # else:
+    #     dataset_name = dataset.__class__.__name__
+    #     raise NotImplementedError("Unsupported dataset type {}.".format(dataset_name))

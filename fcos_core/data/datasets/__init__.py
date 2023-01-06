@@ -5,7 +5,7 @@ from .sim10k import Sim10kDataset
 from .kitti import KittiDataset
 from .concat_dataset import ConcatDataset
 
-from .watercolor import WatercolorDataset
+# from .watercolor import WatercolorDataset
 from .voc_watercolor import WaterColorDataset
 
 

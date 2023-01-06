@@ -36,7 +36,7 @@ A notebook with the demo can be found in [demo/Mask_R-CNN_demo.ipynb](demo/Mask_
 
 ## Installation
 
-Check [INSTALL.md](INSTALL.md) for installation instructions.
+Check [INSTALL.md](docs/INSTALL.md) for installation instructions.
 
 
 ## Model Zoo and Baselines

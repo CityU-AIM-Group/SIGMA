@@ -1,0 +1,125 @@
+OUTPUT_DIR: './experiments/sigma/kitt_to_cityscapes_vgg/'
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+
+  WEIGHT: 'https://s3.ap-northeast-2.amazonaws.com/open-mmlab/pretrain/third_party/vgg16_caffe-292e1171.pth'
+  # WEIGHT: './well_trained_models/kitti_to_city_vgg16_46.45_mAP.pth' # tested with our well-trained model
+
+  RPN_ONLY: True
+  FCOS_ON: True
+  DA_ON: True
+  ATSS_ON: False
+
+  MIDDLE_HEAD_CFG: 'GM_HEAD'
+  MIDDLE_HEAD:
+    CONDGRAPH_ON: True
+    IN_NORM: 'LN'
+    NUM_CONVS_IN: 2
+    GM:
+      # matching cfg
+      MATCHING_LOSS_CFG: 'MSE'
+      MATCHING_CFG: 'o2o'
+      WITH_SCORE_WEIGHT: False
+      WITH_NODE_DIS: True
+      
+      # node sampling
+      NUM_NODES_PER_LVL_SR: 100
+      NUM_NODES_PER_LVL_TG: 100
+      BG_RATIO: 2
+
+      # loss weight
+      MATCHING_LOSS_WEIGHT: 0.1
+      NODE_LOSS_WEIGHT: 1.0
+      NODE_DIS_WEIGHT: 0.1
+      NODE_DIS_LAMBDA:  0.02
+
+      WITH_SEMANTIC_COMPLETION: True
+      WITH_QUADRATIC_MATCHING: True
+      WITH_CLUSTER_UPDATE: True
+      WITH_CTR: False
+
+
+      WITH_COMPLETE_GRAPH: True
+      WITH_DOMAIN_INTERACTION: True
+
+  BACKBONE:
+    CONV_BODY: "VGG-16-FPN-RETINANET"
+  RETINANET:
+    USE_C5: False # FCOS uses P5 instead of C5
+
+  FCOS:
+    NUM_CONVS_REG: 4
+    NUM_CONVS_CLS: 4
+    NUM_CLASSES: 2
+    INFERENCE_TH: 0.05    # pre_nms_thresh    (default=0.05)
+    PRE_NMS_TOP_N: 1000   # pre_nms_top_n     (default=1000)
+    NMS_TH: 0.6          # nms_thresh        (default=0.6)
+    REG_CTR_ON: True
+
+  ADV:
+    GA_DIS_LAMBDA: 0.1 # for dis loss
+    CON_NUM_SHARED_CONV_P7: 4
+    CON_NUM_SHARED_CONV_P6: 4
+    CON_NUM_SHARED_CONV_P5: 4
+    CON_NUM_SHARED_CONV_P4: 4
+    CON_NUM_SHARED_CONV_P3: 4
+    #
+    USE_DIS_GLOBAL: True
+    USE_DIS_P7: True
+    USE_DIS_P6: True
+    USE_DIS_P5: True
+    USE_DIS_P4: True
+    USE_DIS_P3: True
+
+    GRL_WEIGHT_P7: 0.01 # for gradient
+    GRL_WEIGHT_P6: 0.01
+    GRL_WEIGHT_P5: 0.01
+    GRL_WEIGHT_P4: 0.01
+    GRL_WEIGHT_P3: 0.01
+TEST:
+  DETECTIONS_PER_IMG: 100 # fpn_post_nms_top_n  (default=100)
+  MODE: 'common'
+DATASETS:
+  TRAIN_SOURCE: ("kitti_train_caronly", )
+  TRAIN_TARGET: ("cityscapes_train_caronly_cocostyle", )
+  TEST: ("cityscapes_val_caronly_cocostyle", )
+
+INPUT:
+  MIN_SIZE_RANGE_TRAIN: (640, 800)
+  MAX_SIZE_TRAIN: 1333
+  MIN_SIZE_TEST: 800
+  MAX_SIZE_TEST: 1333
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+SOLVER:
+  VAL_ITER: 100
+  ADAPT_VAL_ON: True
+  INITIAL_AP50: 35
+  WEIGHT_DECAY: 0.0001
+  MAX_ITER: 100000
+  # 1 for source and 1 for target
+  IMS_PER_BATCH: 2
+  CHECKPOINT_PERIOD: 100000
+  #
+  BACKBONE:
+    BASE_LR: 0.0025
+    STEPS: (90000, )
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+  MIDDLE_HEAD:
+    BASE_LR: 0.005
+    STEPS: (90000, )
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+    PLABEL_TH: (0.5, 1.0)
+  FCOS:
+    BASE_LR: 0.0025
+    STEPS: (90000, )
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+  #
+  DIS:
+    BASE_LR: 0.0025
+    STEPS: (90000, )
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"

@@ -456,10 +456,10 @@ class DetectronCheckpointer(Checkpointer):
                         #     load_state_dict(self.model["dis_P4_CA"], checkpoint.pop("model_dis_P4_CA"))
                         # if self.cfg.MODEL.ADV.USE_DIS_P3:
                         #     load_state_dict(self.model["dis_P3_CA"], checkpoint.pop("model_dis_P3_CA"))
-                    else:
-                        self.logger.info(
-                            "No center-aware discriminator found in the checkpoint. Initializing model from scratch"
-                        )
+                    # else:
+                    #     self.logger.info(
+                    #         "No center-aware discriminator found in the checkpoint. Initializing model from scratch"
+                    #     )
                 if self.cfg.MODEL.ADV.USE_DIS_OUT and load_dis:
                     if "model_dis_P3_OUT" in checkpoint or "model_dis_P4_OUT" in checkpoint or "model_dis_P5_OUT" in checkpoint or "model_dis_P6_OUT" in checkpoint or "model_dis_P7_OUT" in checkpoint:
                         self.logger.info("Output space alignment discriminator checkpoint found. Initializing model from the checkpoint")

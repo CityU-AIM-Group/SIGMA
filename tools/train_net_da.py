@@ -646,7 +646,8 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Training")
     parser.add_argument(
         "--config-file",
-        default="./configs/SIGMA/sigma_vgg16_cityscapace_to_foggy.yaml",
+        # default="./configs/SIGMA_plus/sigma_vgg16_cityscapace_to_foggy.yaml",
+        default="./configs/debug_vis_c2f.yaml",
         metavar="FILE",
         help="path to config file",
         type=str,

@@ -4,8 +4,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 from torch.autograd import Variable
+
+
 def see(data, name='default'):
-    print('#################################',name,'#################################')
+    print('#################################', name, '#################################')
     print('max: ', torch.max(data))
     print('mean: ', torch.mean(data))
     print('min: ', torch.min(data))
@@ -30,6 +32,7 @@ class FocalLoss(nn.Module):
                                 instead summed for each minibatch.
 
     """
+
     def __init__(self, class_num, alpha=None, gamma=2, size_average=True):
         super(FocalLoss, self).__init__()
         if alpha is None:
@@ -55,19 +58,19 @@ class FocalLoss(nn.Module):
         if inputs.is_cuda and not self.alpha.is_cuda:
             self.alpha = self.alpha.cuda()
         alpha = self.alpha[ids.data.view(-1)]
-        probs =(P*class_mask).sum(1).view(-1,1)
+        probs = (P * class_mask).sum(1).view(-1, 1)
 
-        
         log_p = probs.log()
 
-        batch_loss = -alpha*(torch.pow((1-probs), self.gamma))*log_p
-        #print('-----bacth_loss------')
+        batch_loss = -alpha * (torch.pow((1 - probs), self.gamma)) * log_p
+        # print('-----bacth_loss------')
         # print(batch_loss)
         if self.size_average:
-            loss =batch_loss.mean()
+            loss = batch_loss.mean()
         else:
             loss = batch_loss.sum()
         return loss
+
 
 # 支持多分类和二分类
 # class FocalLoss(nn.Module):
@@ -178,8 +181,7 @@ class BCEFocalLoss(torch.nn.Module):
             loss = torch.mean(loss)
         elif self.reduction == 'sum':
             loss = torch.sum(loss)
-        elif self.reduction =='pos':
-            loss = torch.sum(loss) / (2*pos)
-
+        elif self.reduction == 'pos':
+            loss = torch.sum(loss) / (2 * pos)
 
         return loss

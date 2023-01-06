@@ -20,7 +20,7 @@ python webcam.py --min-image-size 300 --show-mask-heatmaps MODEL.DEVICE cpu
 
 ### With Docker
 
-Build the image with the tag `maskrcnn-benchmark` (check [INSTALL.md](../INSTALL.md) for instructions)
+Build the image with the tag `maskrcnn-benchmark` (check [INSTALL.md](../docs/INSTALL.md) for instructions)
 
 Adjust permissions of the X server host (be careful with this step, refer to 
 [here](http://wiki.ros.org/docker/Tutorials/GUI) for alternatives)

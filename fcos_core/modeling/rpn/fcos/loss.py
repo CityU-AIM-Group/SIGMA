@@ -9,22 +9,19 @@ from torch import nn
 import numpy as np
 from ..utils import concat_box_prediction_layers
 from fcos_core.layers import IOULoss, SigmoidFocalLoss
-
-# from fcos_core.modeling.matcher import Matcher
-# from fcos_core.modeling.utils import cat
-# from fcos_core.structures.boxlist_ops import boxlist_iou
-# from fcos_core.structures.boxlist_ops import cat_boxlist
-# import os
+from fcos_core.modeling.matcher import Matcher
+from fcos_core.modeling.utils import cat
+from fcos_core.structures.boxlist_ops import boxlist_iou
+from fcos_core.structures.boxlist_ops import cat_boxlist
+import os
 from sklearn import *
-# import time
+import time
 INF = 100000000
-
 
 class FCOSLossComputation(object):
     """
     This class computes the FCOS losses.
     """
-
     def __init__(self, cfg):
         self.cls_loss_func = SigmoidFocalLoss(
             cfg.MODEL.FCOS.LOSS_GAMMA,
@@ -34,7 +31,6 @@ class FCOSLossComputation(object):
         # but we found that L1 in log scale can yield a similar performance
         self.box_reg_loss_func = IOULoss()
         self.centerness_loss_func = nn.BCEWithLogitsLoss()
-
     def prepare_targets(self, points, targets):
         object_sizes_of_interest = [
             [-1, 64],
@@ -95,11 +91,9 @@ class FCOSLossComputation(object):
             t = ys[:, None] - bboxes[:, 1][None]
             r = bboxes[:, 2][None] - xs[:, None]
             b = bboxes[:, 3][None] - ys[:, None]
+
             reg_targets_per_im = torch.stack([l, t, r, b], dim=2)
-
-
             is_in_boxes = reg_targets_per_im.min(dim=2)[0] > 0
-
             max_reg_targets_per_im = reg_targets_per_im.max(dim=2)[0]
             # limit the regression range for each location
             is_cared_in_the_level = \
@@ -136,6 +130,7 @@ class FCOSLossComputation(object):
         reg_targets_flatten = []
         labels, reg_targets = self.prepare_targets(locations, targets)
         tmp = []
+
         for l in range(len(labels)):
             reg_targets_flatten.append(reg_targets[l].reshape(-1, 4))
             tmp.append(reg_targets[l].size(0))
@@ -146,9 +141,11 @@ class FCOSLossComputation(object):
         for i in tmp:
             centerness_targets_list.append(centerness_targets[k:k+i])
             k += i
+
         box_cls_gt = []
         box_reg_gt = []
         box_ctr_gt = []
+
         for l in range(len(labels)):
             n, c, h, w = box_cls[l].size()
             if c >len(labels):
@@ -158,7 +155,6 @@ class FCOSLossComputation(object):
             box_reg_gt.append(reg_targets[l].reshape(-1).reshape(n,h,w,4).permute(0,3,1,2).cuda())
             box_ctr_gt.append(centerness_targets_list[l].reshape(-1).reshape(n,h,w,1).permute(0,3,1,2).float().cuda())
         return box_cls_gt, box_reg_gt, box_ctr_gt
-
 
     def __call__(self, locations, box_cls, box_regression, centerness, targets):
         """
@@ -183,7 +179,6 @@ class FCOSLossComputation(object):
         centerness_flatten = []
         labels_flatten = []
         reg_targets_flatten = []
-
         for l in range(len(labels)):
             box_cls_flatten.append(box_cls[l].permute(0, 2, 3, 1).reshape(-1, num_classes))
             box_regression_flatten.append(box_regression[l].permute(0, 2, 3, 1).reshape(-1, 4))
@@ -230,9 +225,8 @@ def make_fcos_loss_evaluator(cfg):
 
 class PrototypeComputation(object):
     """
-    This class conducts the node sampling.
+    This class computes the FCOS losses.
     """
-
     def __init__(self, cfg):
         self.num_class = cfg.MODEL.FCOS.NUM_CLASSES - 1
         self.num_class_fgbg = cfg.MODEL.FCOS.NUM_CLASSES
@@ -256,14 +250,12 @@ class PrototypeComputation(object):
             expanded_object_sizes_of_interest.append(
                 object_sizes_of_interest_per_level[None].expand(len(points_per_level), -1)
             )
-
         expanded_object_sizes_of_interest = torch.cat(expanded_object_sizes_of_interest, dim=0)
         num_points_per_level = [len(points_per_level) for points_per_level in points]
         points_all_level = torch.cat(points, dim=0)
         labels, reg_targets = self.compute_targets_for_locations(
             points_all_level, targets, expanded_object_sizes_of_interest
         )
-
         for i in range(len(labels)):
             labels[i] = torch.split(labels[i], num_points_per_level, dim=0)
             reg_targets[i] = torch.split(reg_targets[i], num_points_per_level, dim=0)
@@ -277,7 +269,6 @@ class PrototypeComputation(object):
             # reg_targets_level_first.append(
             #     torch.cat([reg_targets_per_im[level] for reg_targets_per_im in reg_targets], dim=0)
             # )
-
         return labels_level_first
     def compute_targets_for_locations(self, locations, targets, object_sizes_of_interest):
         labels = []
@@ -296,9 +287,7 @@ class PrototypeComputation(object):
             r = bboxes[:, 2][None] - xs[:, None]
             b = bboxes[:, 3][None] - ys[:, None]
             reg_targets_per_im = torch.stack([l, t, r, b], dim=2)
-
             is_in_boxes = reg_targets_per_im.min(dim=2)[0] > 0
-
             max_reg_targets_per_im = reg_targets_per_im.max(dim=2)[0]
             # limit the regression range for each location
             is_cared_in_the_level = \
@@ -316,8 +305,6 @@ class PrototypeComputation(object):
             reg_targets_per_im = reg_targets_per_im[range(len(locations)), locations_to_gt_inds]
             labels_per_im = labels_per_im[locations_to_gt_inds]
             labels_per_im[locations_to_min_area == INF] = 0
-
-
             labels.append(labels_per_im)
             reg_targets.append(reg_targets_per_im)
 
@@ -329,7 +316,6 @@ class PrototypeComputation(object):
         centerness = (left_right.min(dim=-1)[0] / left_right.max(dim=-1)[0]) * \
                       (top_bottom.min(dim=-1)[0] / top_bottom.max(dim=-1)[0])
         return torch.sqrt(centerness)
-
 
     def __call__(self, locations, features, targets):
 
@@ -417,7 +403,6 @@ class PrototypeComputation(object):
                 pos_plabels = torch.cat(pos_plabels,dim=0)
                 neg_points = torch.cat(neg_points, dim=0)
                 neg_plabels = pos_plabels.new_zeros((neg_points.size(0)))
-
                 pos_weight = torch.cat(pos_weight, dim=0)
                 neg_weight = pos_weight.new_ones(neg_points.size(0)) * 0.5
                 points = torch.cat([neg_points, pos_points], dim=0)

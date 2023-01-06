@@ -712,4 +712,3 @@ def test_nan(para, name='gcn'):
     assert para.max() < INF, 'nan of {}'.format(name)
     return para
 
-

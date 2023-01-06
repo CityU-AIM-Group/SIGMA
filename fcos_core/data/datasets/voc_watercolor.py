@@ -20,7 +20,8 @@ class WaterColorDataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, use_difficult=False, transforms=None):
         self.root = data_dir
         self.image_set = split
-        self.keep_difficult = use_difficult
+        # self.keep_difficult = use_difficult
+        self.keep_difficult =True
         self.transforms = transforms
 
         self._annopath = os.path.join(self.root, "Annotations", "%s.xml")
@@ -34,6 +35,21 @@ class WaterColorDataset(torch.utils.data.Dataset):
 
         cls = WaterColorDataset.CLASSES
         self.class_to_ind = dict(zip(cls, range(len(cls))))
+
+        # remove no object indexs:
+        print('Checking annotations!')
+        new_ids = []
+        for img_id in self.ids:
+            anno = ET.parse(self._annopath % img_id).getroot()
+            check = self._check_annotation(anno)
+            if check:
+                new_ids.append(img_id)
+            else:
+                print('{} doesnot contain box! Remove it!'.format(img_id))
+        self.ids = new_ids
+
+
+
 
     def __getitem__(self, index):
         img_id = self.ids[index]
@@ -54,7 +70,6 @@ class WaterColorDataset(torch.utils.data.Dataset):
         img_id = self.ids[index]
         anno = ET.parse(self._annopath % img_id).getroot()
         anno = self._preprocess_annotation(anno)
-
         height, width = anno["im_info"]
         target = BoxList(anno["boxes"], (width, height), mode="xyxy")
         target.add_field("labels", anno["labels"])
@@ -87,8 +102,12 @@ class WaterColorDataset(torch.utils.data.Dataset):
                 bb.find("xmax").text,
                 bb.find("ymax").text,
             ]
+            # bndbox = tuple(
+            #     map(lambda x: x - TO_REMOVE, list(map(int, box)))
+            # )
+
             bndbox = tuple(
-                map(lambda x: x - TO_REMOVE, list(map(int, box)))
+                map(lambda x: x - TO_REMOVE, list(map(int, map(float, box))))
             )
 
             boxes.append(bndbox)
@@ -105,6 +124,30 @@ class WaterColorDataset(torch.utils.data.Dataset):
             "im_info": im_info,
         }
         return res
+
+    def _check_annotation(self, target):
+        boxes = []
+        gt_classes = []
+        difficult_boxes = []
+        TO_REMOVE = 1
+
+        for obj in target.iter("object"):
+            difficult = int(obj.find("difficult").text) == 1
+            if not self.keep_difficult and difficult:
+                continue
+            name = obj.find("name").text.lower().strip()
+
+
+            if not name in WaterColorDataset.CLASSES:
+                continue
+            boxes.append('box') 
+
+
+        if len(boxes) == 0:
+            return False
+        else:
+            return True
+
 
     def get_img_info(self, index):
         img_id = self.ids[index]

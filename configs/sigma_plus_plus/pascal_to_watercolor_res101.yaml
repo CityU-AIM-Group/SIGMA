@@ -1,0 +1,118 @@
+OUTPUT_DIR: './experiments/sigma_plus/pascal_to_watercolor/'
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  WEIGHT: './published_models/source_only_pascal_to_water_comic.pth' # Initialed by source-only model (44 mAP)
+#  WEIGHT: './published_models/pascal_to_water_model_57_mAP.pth' # Initialed by imagenets
+  RPN_ONLY: True
+  FCOS_ON: True
+  ATSS_ON: False
+  DA_ON: True
+  MIDDLE_HEAD_CFG: 'GM_HEAD'
+  MIDDLE_HEAD:
+    CONDGRAPH_ON: True
+    IN_NORM: 'LN'
+    NUM_CONVS_IN: 1
+    GM:
+      # SIGMA_plus_plus:
+      WITH_HyperGNN: True
+      HyperEdgeNum: 3
+      NUM_HYPERGNN_LAYER: 1
+      ANGLE_EPS: 1e-2
+      # SIGMA:
+      # node sampling
+      NUM_NODES_PER_LVL_SR: 100
+      NUM_NODES_PER_LVL_TG: 100
+      BG_RATIO: 8
+      # loss weight
+      NODE_DIS_WEIGHT: 0.2
+      NODE_DIS_LAMBDA:  0.1
+      NODE_LOSS_WEIGHT: 1.0
+      MATCHING_LOSS_WEIGHT: 0.1
+      # detailed settings
+      MATCHING_LOSS_CFG: 'MSE'
+      MATCHING_CFG: 'o2o'
+      WITH_QUADRATIC_MATCHING: True
+      WITH_NODE_DIS: True
+      WITH_SEMANTIC_COMPLETION: True
+      WITH_CLUSTER_UPDATE: True
+      WITH_COMPLETE_GRAPH: True
+      WITH_DOMAIN_INTERACTION: True
+      WITH_SCORE_WEIGHT: False
+      WITH_CTR: False
+  BACKBONE:
+    CONV_BODY: "R-101-FPN-RETINANET"
+  RESNETS:
+    BACKBONE_OUT_CHANNELS: 256
+  RETINANET:
+    USE_C5: False
+  FCOS:
+    NUM_CONVS_REG: 4
+    NUM_CONVS_CLS: 4
+    NUM_CLASSES: 7
+    INFERENCE_TH: 0.05    # pre_nms_thresh    (default=0.05)
+    PRE_NMS_TOP_N: 1000   # pre_nms_top_n     (default=1000)
+    NMS_TH: 0.6           # nms_thresh        (default=0.6)
+    REG_CTR_ON: True
+  ADV:
+    GA_DIS_LAMBDA: 0.1
+    CON_NUM_SHARED_CONV_P7: 4
+    CON_NUM_SHARED_CONV_P6: 4
+    CON_NUM_SHARED_CONV_P5: 4
+    CON_NUM_SHARED_CONV_P4: 4
+    CON_NUM_SHARED_CONV_P3: 4
+
+    USE_DIS_GLOBAL: True
+    USE_DIS_P7: True
+    USE_DIS_P6: True
+    USE_DIS_P5: True
+    USE_DIS_P4: True
+    USE_DIS_P3: True
+
+    GRL_WEIGHT_P7: 0.2
+    GRL_WEIGHT_P6: 0.2
+    GRL_WEIGHT_P5: 0.2
+    GRL_WEIGHT_P4: 0.2
+    GRL_WEIGHT_P3: 0.2
+TEST:
+  DETECTIONS_PER_IMG: 100 # fpn_post_nms_top_n  (default=100)
+  MODE: 'common'
+DATASETS:
+  TRAIN_SOURCE: ("voc_2007_cyclegan_water_color", "voc_2012_cyclegan_water_color" )
+  TRAIN_TARGET: ("water_train", )
+  TEST: ("water_test", )
+INPUT:
+  MIN_SIZE_RANGE_TRAIN: (640, 800)
+  MAX_SIZE_TRAIN: 1333
+  MIN_SIZE_TEST: 800
+  MAX_SIZE_TEST: 1333
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+SOLVER:
+  VAL_ITER: 100
+  VAL_ITER_START: 10000
+  INITIAL_AP50: 10
+  WEIGHT_DECAY: 0.0001
+  MAX_ITER: 30000  # Achieve best results at around 20000
+  IMS_PER_BATCH: 4   # 2 for source and 2 for target
+  CHECKPOINT_PERIOD: 5000
+  BACKBONE:
+    BASE_LR: 0.0001
+    STEPS: (75000, 90000) # Didn't use
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+  MIDDLE_HEAD:
+    BASE_LR: 0.0005
+    STEPS:  (75000, 90000)
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+    PLABEL_TH: (0.5, 1.0)  # if the cls score > 0.5, we sample this node
+  FCOS:
+    BASE_LR: 0.0001
+    STEPS: (75000, 90000)
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"
+  DIS:
+    BASE_LR: 0.0001
+    STEPS: (75000, 90000)
+    WARMUP_ITERS: 1000
+    WARMUP_METHOD: "constant"

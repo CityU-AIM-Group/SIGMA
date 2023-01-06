@@ -51,7 +51,7 @@ Please check out [here](fcos/bin/fcos) for the interface usage.
 #### For a complete installation 
 This FCOS implementation is based on [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark). Therefore the installation is the same as original maskrcnn-benchmark.
 
-Please check [INSTALL.md](INSTALL.md) for installation instructions.
+Please check [INSTALL.md](docs/INSTALL.md) for installation instructions.
 You may also want to see the original [README.md](MASKRCNN_README.md) of maskrcnn-benchmark.
 
 ## A quick demo
