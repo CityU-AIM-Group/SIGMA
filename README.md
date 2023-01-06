@@ -1,17 +1,17 @@
-# [SIGMA : Semantic-complete Graph Matching For Domain Adaptive Object Detection (CVPR-22 ORAL)](https://arxiv.org/pdf/2203.06398.pdf)
+# [SIGMA: Semantic-complete Graph Matching For Domain Adaptive Object Detection (CVPR-22 ORAL)](https://arxiv.org/pdf/2203.06398.pdf)
 
 [[Arxiv](https://arxiv.org/pdf/2203.06398.pdf)] [[知乎](https://zhuanlan.zhihu.com/p/492956292)]
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
 Two branches of the project:
-- Main branch: SIGMA, ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
-- SIGMA++ branch: [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) ```git clone -b SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
+- Main branch (SIGMA): ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
+- [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
 
 The features of [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++):
 - More datasets and instructions
 - More stable and better results
-- Imprve graph with hypergraph
+- From graph to hypergraph
 
 ![image](./assets/matching_visualization.png)
 
