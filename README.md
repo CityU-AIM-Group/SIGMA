@@ -44,7 +44,7 @@ Faster RCNN C4 based implementation: city to foggy. You can find the model and l
 
 We transfer the  [DA-FRCNN](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch) implementation in this project.
 
-NOTE: We didn't carefully tune the hyper-paramteres for FRCNN-based implementation duo to the time limit. Moreover, we replace the feature points with ROI features for graph-based operation as exiting works, e.g., [GPA](https://github.com/ChrisAllenMing/GPA-detection).
+NOTE: We didn't carefully tune the hyper-paramteres for FRCNN-based implementation duo to the time limit. Moreover, we replace the feature points with ROI features for graph-based operations as exiting works, e.g., [GPA](https://github.com/ChrisAllenMing/GPA-detection).
 
 Method | AP@50:95 | AP@50| AP@75 | APs |APm |APl|
 | :-----:| :-----:|:----:| :----: | :----:| :----: |:-----:| 
