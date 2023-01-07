@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# SIGMA: Semantic-complete Graph Matching for Domain Adaptive Object Detection (CVPR22-ORAL)
+# SIGMA: Semantic-complete Graph Matching for Domain Adaptive Object Detection
 # Modified by Wuyang Li
 # This file contains the original fcos loss computation and the node sampling of SIGMA
 # --------------------------------------------------------
@@ -7,16 +7,17 @@ import torch
 from torch.nn import functional as F
 from torch import nn
 import numpy as np
+
 from ..utils import concat_box_prediction_layers
 from fcos_core.layers import IOULoss, SigmoidFocalLoss
 
-# from fcos_core.modeling.matcher import Matcher
-# from fcos_core.modeling.utils import cat
-# from fcos_core.structures.boxlist_ops import boxlist_iou
-# from fcos_core.structures.boxlist_ops import cat_boxlist
-# import os
+from fcos_core.modeling.matcher import Matcher
+from fcos_core.modeling.utils import cat
+from fcos_core.structures.boxlist_ops import boxlist_iou
+from fcos_core.structures.boxlist_ops import cat_boxlist
+import os
 from sklearn import *
-# import time
+import time
 INF = 100000000
 
 
@@ -136,6 +137,7 @@ class FCOSLossComputation(object):
         reg_targets_flatten = []
         labels, reg_targets = self.prepare_targets(locations, targets)
         tmp = []
+
         for l in range(len(labels)):
             reg_targets_flatten.append(reg_targets[l].reshape(-1, 4))
             tmp.append(reg_targets[l].size(0))
@@ -146,9 +148,11 @@ class FCOSLossComputation(object):
         for i in tmp:
             centerness_targets_list.append(centerness_targets[k:k+i])
             k += i
+
         box_cls_gt = []
         box_reg_gt = []
         box_ctr_gt = []
+
         for l in range(len(labels)):
             n, c, h, w = box_cls[l].size()
             if c >len(labels):
@@ -183,7 +187,6 @@ class FCOSLossComputation(object):
         centerness_flatten = []
         labels_flatten = []
         reg_targets_flatten = []
-
         for l in range(len(labels)):
             box_cls_flatten.append(box_cls[l].permute(0, 2, 3, 1).reshape(-1, num_classes))
             box_regression_flatten.append(box_regression[l].permute(0, 2, 3, 1).reshape(-1, 4))
@@ -222,7 +225,11 @@ class FCOSLossComputation(object):
             reg_loss = box_regression_flatten.sum()
             centerness_loss = centerness_flatten.sum()
 
+
         return cls_loss, reg_loss, centerness_loss
+
+
+
 
 def make_fcos_loss_evaluator(cfg):
     loss_evaluator = FCOSLossComputation(cfg)
@@ -230,7 +237,7 @@ def make_fcos_loss_evaluator(cfg):
 
 class PrototypeComputation(object):
     """
-    This class conducts the node sampling.
+    This class computes the FCOS losses.
     """
 
     def __init__(self, cfg):
@@ -377,6 +384,7 @@ class PrototypeComputation(object):
 
             return pos_points, pos_labels, pos_labels.new_ones(pos_labels.shape).long()
 
+
         else: # Sampling in the target domain
             act_maps_lvl_first = targets
             N, C, _, _ = features[0].size()
@@ -427,6 +435,9 @@ class PrototypeComputation(object):
                 return points, plabels, loss_weight.long()
             else:
                 return None, None, None
+
+
+
 
 def make_prototype_evaluator(cfg):
     prototype_evaluator = PrototypeComputation(cfg)

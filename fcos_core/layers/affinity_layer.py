@@ -18,16 +18,16 @@ class Affinity(nn.Module):
         self.d = d
 
         self.fc_M = nn.Sequential(
-            nn.Linear(512, 512),
+            nn.Linear(d, d),
             nn.ReLU(),
-            nn.Linear(512, 1)
+            nn.Linear(d, 1)
 
         )
 
         # self.project_sr = nn.Linear(256, 256,bias=False)
         # self.project_tg = nn.Linear(256, 256,bias=False)
-        self.project_sr = nn.Linear(256, 256,bias=False)
-        self.project_tg = nn.Linear(256, 256,bias=False)
+        self.project_sr = nn.Linear(d, d//2,bias=False)
+        self.project_tg = nn.Linear(d, d//2,bias=False)
         self.reset_parameters()
 
 
@@ -51,15 +51,20 @@ class Affinity(nn.Module):
         # nn.init.constant_(i.bias, 0)
     def forward(self, X, Y):
 
+
+
         X = self.project_sr(X)
         Y = self.project_tg(Y)
+
 
         N1, C = X.size()
         N2, C = Y.size()
 
         X_k = X.unsqueeze(1).expand(N1, N2, C)
         Y_k = Y.unsqueeze(0).expand(N1, N2, C)
+
         M = torch.cat([X_k, Y_k], dim=-1)
+
         M = self.fc_M(M).squeeze()
 
         # The common GM design doesn;t work!!

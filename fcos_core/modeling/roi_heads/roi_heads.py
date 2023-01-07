@@ -23,7 +23,7 @@ class CombinedROIHeads(torch.nn.ModuleDict):
     def forward(self, features, proposals, targets=None):
         losses = {}
         # TODO rename x to roi_box_features, if it doesn't increase memory consumption
-        x, detections, loss_box = self.box(features, proposals, targets)
+        x, detections, loss_box, da_ins_feas, da_ins_labels = self.box(features, proposals, targets)
         losses.update(loss_box)
         if self.cfg.MODEL.MASK_ON:
             mask_features = features
@@ -52,10 +52,10 @@ class CombinedROIHeads(torch.nn.ModuleDict):
             # this makes the API consistent during training and testing
             x, detections, loss_keypoint = self.keypoint(keypoint_features, detections, targets)
             losses.update(loss_keypoint)
-        return x, detections, losses
+        return x, detections, losses, da_ins_feas, da_ins_labels
 
 
-def build_roi_heads(cfg, in_channels):
+def build_roi_heads(cfg,in_channels):
     # individually create the heads, that will be combined together
     # afterwards
     roi_heads = []
@@ -63,11 +63,11 @@ def build_roi_heads(cfg, in_channels):
         return []
 
     if not cfg.MODEL.RPN_ONLY:
-        roi_heads.append(("box", build_roi_box_head(cfg, in_channels)))
+        roi_heads.append(("box", build_roi_box_head(cfg,in_channels)))
     if cfg.MODEL.MASK_ON:
         roi_heads.append(("mask", build_roi_mask_head(cfg, in_channels)))
     if cfg.MODEL.KEYPOINT_ON:
-        roi_heads.append(("keypoint", build_roi_keypoint_head(cfg, in_channels)))
+        roi_heads.append(("keypoint", build_roi_keypoint_head(cfg,in_channels)))
 
     # combine individual heads in a single module
     if roi_heads:

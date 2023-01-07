@@ -3,7 +3,8 @@
 
 import os
 class DatasetCatalog(object):
-    DATA_DIR = "/media/wuyang/scratch/data/"
+    DATA_DIR = "" # dataset root
+    # DATA_DIR = "/home/wuyang/data/" # dataset root
     DATASETS = {
         "coco_2017_train": {
             "img_dir": "coco/train2017",
@@ -184,17 +185,22 @@ class DatasetCatalog(object):
             "data_dir": "VOCdevkit/VOC2012/",
             "split": "voc2012_water"
         },
-
+        "water_train": {
+            "data_dir": "watercolor",
+            "split": "train"
+        },
+        "water_test": {
+            "data_dir": "watercolor",
+            "split": "test"
+        },
         "water_train_cocostyle": {
             "img_dir": "watercolor/JPEGImages",
             "ann_file": "watercolor/train.json"
         },
-
         "water_test_cocostyle": {
             "img_dir": "watercolor/JPEGImages",
             "ann_file": "watercolor/test.json"
         },
-
         "voc_2007_trainval": {
             "data_dir": "VOCdevkit/VOC2007/",
             "split": "trainval"
@@ -203,15 +209,43 @@ class DatasetCatalog(object):
             "data_dir": "VOCdevkit/VOC2012/",
             "split": "trainval"
         },
-
         "bdd100k_train_cocostyle": {
-            "img_dir": "BDD100k/images/train",
-            "ann_file": "BDD100k/cocoAnnotations/bdd100k_train_da.json"
+            "img_dir": "BDD100K/images/train/",
+            "ann_file": "BDD100K/cocoAnnotations/bdd100k_train_da.json"
         },
         "bdd100k_val_cocostyle": {
-            "img_dir": "BDD100k/images/val",
-            "ann_file": "BDD100k/cocoAnnotations/bdd100k_val_da.json"
+            "img_dir": "BDD100K/images/val",
+            "ann_file": "BDD100K/cocoAnnotations/bdd100k_val_da.json"
         },
+        "voc_2007_cyclegan": {
+            "data_dir": "style-transferred/VOC2007_to_clipart/",
+            "split": "da_transferred_train"
+        },
+        "voc_2012_cyclegan": {
+            "data_dir": "style-transferred/VOC2012_to_clipart/",
+            "split": "da_transferred_train"
+        },
+        "voc_2007_cyclegan_water_color": {
+            "data_dir": "style-transferred/VOC2007_to_watercolor/",
+            "split": "transferrd_train"
+        },
+        "voc_2012_cyclegan_water_color": {
+            "data_dir": "style-transferred/VOC2012_to_watercolor/",
+            "split": "transferrd_train"
+        },
+        "voc_2007_cyclegan_comic": {
+            "data_dir": "style-transferred/VOC2007_to_comic/",
+            "split": "transferred_train"
+        },
+        "voc_2012_cyclegan_comic": {
+            "data_dir": "style-transferred/VOC2012_to_comic/",
+            "split": "transferred_train"
+        },
+        "kitti_train_caronly": {
+            "data_dir": "KITTI",
+            "split": "train_caronly"
+        },
+
     }
 
     @staticmethod
@@ -249,6 +283,17 @@ class DatasetCatalog(object):
                 factory="COCODataset",
                 args=args,
             )
+        elif "water" in name or 'comic' in name:
+            data_dir = DatasetCatalog.DATA_DIR
+            attrs = DatasetCatalog.DATASETS[name]
+            args = dict(
+                data_dir=os.path.join(data_dir, attrs["data_dir"]),
+                split=attrs["split"],
+            )
+            return dict(
+                factory="WaterColorDataset",
+                args=args,
+            )
         elif "voc" in name:
             data_dir = DatasetCatalog.DATA_DIR
             attrs = DatasetCatalog.DATASETS[name]
@@ -260,21 +305,6 @@ class DatasetCatalog(object):
                 factory="PascalVOCDataset",
                 args=args,
             )
-        elif "water" in name:
-            data_dir = DatasetCatalog.DATA_DIR
-            attrs = DatasetCatalog.DATASETS[name]
-            args = dict(
-                data_dir=os.path.join(data_dir, attrs["data_dir"]),
-                split=attrs["split"],
-            )
-            return dict(
-                factory="WaterColorDataset",
-                args=args,
-            )
-
-
-
-
 
         raise RuntimeError("Dataset not available: {}".format(name))
 

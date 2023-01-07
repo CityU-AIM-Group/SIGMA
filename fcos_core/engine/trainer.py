@@ -148,7 +148,7 @@ def validataion(cfg, model, data_loader, distributed=False):
     assert len(data_loader) == 1, "More than one validation sets!"
     data_loader = data_loader[0]
     # for  dataset_name, data_loader_val in zip( dataset_names, data_loader):
-    results, _ = _inference(
+    results = _inference(
         cfg,
         model,
         data_loader,
@@ -244,15 +244,20 @@ def do_train(
             if cfg.SOLVER.ADAPT_VAL_ON:
                 if iteration % cfg.SOLVER.VAL_ITER == 0:
                     val_results = validataion(cfg, model, data_loader["val"], distributed)
-                    # used for saving model
-                    AP50_emp = val_results.results['bbox'][cfg.SOLVER.VAL_TYPE] * 100
-                    # used for logging
-                    meter_AP50= val_results.results['bbox']['AP50'] * 100
-                    meter_AP = val_results.results['bbox']['AP']* 100
-                    meters.update(AP = meter_AP, AP50 = meter_AP50 )
+                    if type(val_results)== dict:
+                        AP50_online = val_results['map'] * 100
+                        meters.update(AP50=AP50_online)
+                    else:
+                        val_results = val_results[0]
+                        # used for saving model
+                        AP50_online = val_results.results['bbox'][cfg.SOLVER.VAL_TYPE] * 100
+                        # used for logging
+                        meter_AP50= val_results.results['bbox']['AP50'] * 100
+                        meter_AP = val_results.results['bbox']['AP']* 100
+                        meters.update(AP = meter_AP, AP50 = meter_AP50 )
 
-                    if AP50_emp > AP50:
-                        AP50 = AP50_emp
+                    if AP50_online > AP50:
+                        AP50 = AP50_online
                         checkpointer.save("model_{}_{:07d}".format(AP50, iteration), **arguments)
                         print('***warning****,\n best model updated. {}: {}, iter: {}'.format(cfg.SOLVER.VAL_TYPE, AP50,
                                                                                            iteration))
@@ -348,20 +353,25 @@ def do_train(
                 # This is similar to https://github.com/ChrisAllenMing/GPA-detection/blob/master/iterative_test.py to get a benchmark result,
                 # Without this iterative validation, we even cannot reproduce our baseline results (EPM).
 
-                if iteration % cfg.SOLVER.VAL_ITER== 0:
+                if iteration % cfg.SOLVER.VAL_ITER == 0:
                     val_results = validataion(cfg, model, data_loader["val"], distributed)
-                    # used for saving model
-                    AP50_emp = val_results.results['bbox'][cfg.SOLVER.VAL_TYPE] * 100
-                    # used for logging
-                    meter_AP50 = val_results.results['bbox']['AP50'] * 100
-                    meter_AP = val_results.results['bbox']['AP'] * 100
-                    meters.update(AP=meter_AP, AP50=meter_AP50)
-                    if (AP50_emp > AP50): # saving better models
-                    # if (AP50_emp > AP50) or (AP50_emp> 40.8): # saving more models
-                        if  (AP50_emp > AP50):
-                            AP50 = AP50_emp
-                        checkpointer.save("model_{}_{:07d}".format(AP50_emp, iteration), **arguments)
-                        print('***warning****,\n best model updated. {}: {}, iter: {}'.format(cfg.SOLVER.VAL_TYPE, AP50_emp, iteration))
+                    if type(val_results)== dict:
+                        AP50_online = val_results['map'] * 100
+                        meters.update(AP50=AP50_online)
+                    else:
+                        val_results = val_results[0]
+                        # used for saving model
+                        AP50_online = val_results.results['bbox'][cfg.SOLVER.VAL_TYPE] * 100
+                        # used for logging
+                        meter_AP50= val_results.results['bbox']['AP50'] * 100
+                        meter_AP = val_results.results['bbox']['AP']* 100
+                        meters.update(AP = meter_AP, AP50 = meter_AP50 )
+
+                    if AP50_online > AP50:
+                        AP50 = AP50_online
+                        checkpointer.save("model_{}_{:07d}".format(AP50, iteration), **arguments)
+                        print('***warning****,\n best model updated. {}: {}, iter: {}'.format(cfg.SOLVER.VAL_TYPE, AP50,
+                                                                                           iteration))
                     if distributed:
                         model["backbone"] = model["backbone"].module
                         model["middle_head"] = model["middle_head"].module

@@ -11,8 +11,8 @@
 
 ### Step-by-step installation
 ```
-conda create --name SIGMA python=3.7
-conda activate SIGMA
+conda create --name SIGMA_plus_plus python=3.7
+conda activate SIGMA_plus_plus
 
 # this installs the right pip and dependencies for the fresh python
 conda install ipython
@@ -36,7 +36,7 @@ python setup.py build_ext install
 
 # install PyTorch Detection
 cd $INSTALL_DIR
-git clone https://github.com/CityU-AIM-Group/SIGMA.git
+git clone -b FRCNN-SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git
 cd SIGMA
 
 # the following will install the lib with

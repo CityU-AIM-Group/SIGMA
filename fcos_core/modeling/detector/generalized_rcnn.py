@@ -12,6 +12,7 @@ from ..backbone import build_backbone
 from ..rpn.rpn import build_rpn,build_middle_head
 from ..roi_heads.roi_heads import build_roi_heads
 
+from ..da_heads.da_heads import build_da_heads
 
 class GeneralizedRCNN(nn.Module):
     """
@@ -27,9 +28,19 @@ class GeneralizedRCNN(nn.Module):
         super(GeneralizedRCNN, self).__init__()
 
         self.backbone = build_backbone(cfg)
-        self.rpn = build_rpn(cfg, self.backbone.out_channels)
-        self.middle_head = build_middle_head(cfg, self.backbone.out_channels)
-        self.roi_heads = build_roi_heads(cfg, self.backbone.out_channels)
+        self.rpn = build_rpn(cfg, self.backbone.out_channels)  # support FCOS and RPN
+
+        self.da_faster_rcnn_on = cfg.MODEL.DAFRCNN_ON
+        self.da_fcos_on = cfg.MODEL.FCOS_ON
+
+        if self.da_faster_rcnn_on:
+            self.roi_heads = build_roi_heads(cfg, self.backbone.out_channels)
+            self.da_heads = build_da_heads(cfg)
+
+        if self.da_fcos_on:
+            self.middle_head = build_middle_head(cfg, self.backbone.out_channels)
+
+
 
     def forward(self, images, targets=None):
         """
@@ -44,27 +55,41 @@ class GeneralizedRCNN(nn.Module):
                 like `scores`, `labels` and `mask` (for Mask R-CNN models).
 
         """
+        da_losses = {}
+
         if self.training and targets is None:
             raise ValueError("In training mode, targets should be passed")
         images = to_image_list(images)
         features = self.backbone(images.tensors)
 
-        if self.middle_head:
-            features = self.middle_head(images, features, targets)
+        if self.da_fcos_on:
+            if self.middle_head:
+                features = self.middle_head(images, features, targets)
 
         proposals, proposal_losses = self.rpn(images, features, targets)
-        if self.roi_heads:
-            x, result, detector_losses = self.roi_heads(features, proposals, targets)
-        else:
+        # proposals: [BoxList x 4]
+
+        # [4, 1024, 38, 76]
+        # 256 RoiS:
+        if self.da_faster_rcnn_on:
+            # x, result, detector_losses = self.roi_heads(features, proposals, targets)
+            x, result, detector_losses, da_ins_feas, da_ins_labels = self.roi_heads(features, proposals, targets)
+            if self.da_heads:
+                da_losses = self.da_heads(features, da_ins_feas, da_ins_labels, targets)
+
+        elif self.da_fcos_on:
             # RPN-only models don't have roi_heads
             x = features
             result = proposals
             detector_losses = {}
+        else:
+            raise TypeError("Unsupport object detector !")
 
         if self.training:
             losses = {}
             losses.update(detector_losses)
             losses.update(proposal_losses)
+            losses.update(da_losses)
             return losses
 
         return result

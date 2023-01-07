@@ -14,7 +14,7 @@ from .collate_batch import BatchCollator
 from .transforms import build_transforms
 
 
-def build_dataset(dataset_list, transforms, dataset_catalog, is_train=True):
+def build_dataset(dataset_list, transforms, dataset_catalog, is_train=True, is_source=False):
     """
     Arguments:
         dataset_list (list[str]): Contains the names of the datasets, i.e.,
@@ -40,6 +40,7 @@ def build_dataset(dataset_list, transforms, dataset_catalog, is_train=True):
         if data["factory"] == "PascalVOCDataset":
             args["use_difficult"] = not is_train
         args["transforms"] = transforms
+        args["is_source"] = is_source
         # make dataset from factory
         dataset = factory(**args)
         datasets.append(dataset)
@@ -224,7 +225,8 @@ def make_data_loader_source(cfg, is_train=True, is_distributed=False, start_iter
     dataset_list = cfg.DATASETS.TRAIN_SOURCE
 
     transforms = build_transforms(cfg, is_train)
-    datasets = build_dataset(dataset_list, transforms, DatasetCatalog, is_train)
+
+    datasets = build_dataset(dataset_list, transforms, DatasetCatalog, is_train, is_source=True)
     data_loaders = []
     for dataset in datasets:
         sampler = make_data_sampler(dataset, shuffle, is_distributed)

@@ -711,5 +711,3 @@ def build_condgraph(cfg, in_channels):
 def test_nan(para, name='gcn'):
     assert para.max() < INF, 'nan of {}'.format(name)
     return para
-
-

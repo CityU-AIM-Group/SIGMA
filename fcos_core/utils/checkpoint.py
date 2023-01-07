@@ -97,7 +97,6 @@ class Checkpointer(object):
     def _load_model(self, checkpoint):
         load_state_dict(self.model, checkpoint.pop("model"))
 
-
 class DetectronCheckpointer(Checkpointer):
     def __init__(
         self,
@@ -144,158 +143,153 @@ class DetectronCheckpointer(Checkpointer):
 
         if not self.save_to_disk:
             return
-
         data = {}
-        data["model_backbone"] = self.model["backbone"].state_dict()
-        data["model_fcos"] = self.model["fcos"].state_dict()
-        if self.cfg.MODEL.MIDDLE_HEAD.CONDGRAPH_ON:
-            data["middle_head"] = self.model["middle_head"].state_dict()
-        if not  self.cfg.MODEL.RPN_ONLY:
-            data["roi_head"] = self.model["roi_head"].state_dict()
 
-        if self.cfg.MODEL.DA_ON:
-            if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
-                if self.cfg.MODEL.ADV.USE_DIS_P7:
-                    data["model_dis_P7"] = self.model["dis_P7"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P6:
-                    data["model_dis_P6"] = self.model["dis_P6"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P5:
-                    data["model_dis_P5"] = self.model["dis_P5"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P4:
-                    data["model_dis_P4"] = self.model["dis_P4"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P3:
-                    data["model_dis_P3"] = self.model["dis_P3"].state_dict()
-            if self.cfg.MODEL.ADV.USE_DIS_CENTER_AWARE:
-                if self.cfg.MODEL.ADV.USE_DIS_P7:
-                    data["model_dis_P7_CA"] = self.model["dis_P7_CA"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P6:
-                    data["model_dis_P6_CA"] = self.model["dis_P6_CA"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P5:
-                    data["model_dis_P5_CA"] = self.model["dis_P5_CA"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P4:
-                    data["model_dis_P4_CA"] = self.model["dis_P4_CA"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P3:
-                    data["model_dis_P3_CA"] = self.model["dis_P3_CA"].state_dict()
-            if self.cfg.MODEL.ADV.USE_DIS_OUT:
-                if self.cfg.MODEL.ADV.USE_DIS_P7:
-                    data["model_dis_P7_OUT"] = self.model["dis_P7_OUT"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P6:
-                    data["model_dis_P6_OUT"] = self.model["dis_P6_OUT"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P5:
-                    data["model_dis_P5_OUT"] = self.model["dis_P5_OUT"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P4:
-                    data["model_dis_P4_OUT"] = self.model["dis_P4_OUT"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P3:
-                    data["model_dis_P3_OUT"] = self.model["dis_P3_OUT"].state_dict()
-            if self.cfg.MODEL.ADV.USE_DIS_CON:
-                if self.cfg.MODEL.ADV.USE_DIS_P7:
-                    data["model_dis_P7_CON"] = self.model["dis_P7_CON"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P6:
-                    data["model_dis_P6_CON"] = self.model["dis_P6_CON"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P5:
-                    data["model_dis_P5_CON"] = self.model["dis_P5_CON"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P4:
-                    data["model_dis_P4_CON"] = self.model["dis_P4_CON"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_P3:
-                    data["model_dis_P3_CON"] = self.model["dis_P3_CON"].state_dict()
-
-
-        if self.optimizer is not None:
+        if isinstance(self.model, dict) :
+            data["model_backbone"] = self.model["backbone"].state_dict()
+            data["model_fcos"] = self.model["fcos"].state_dict()
+            if 'middle_head' in self.model:
+                data["middle_head"] = self.model["middle_head"].state_dict()
+            # fcos discriminators
             if self.cfg.MODEL.DA_ON:
                 if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
                     if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["optimizer_dis_P7"] = self.optimizer["dis_P7"].state_dict()
+                        data["model_dis_P7"] = self.model["dis_P7"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["optimizer_dis_P6"] = self.optimizer["dis_P6"].state_dict()
+                        data["model_dis_P6"] = self.model["dis_P6"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["optimizer_dis_P5"] = self.optimizer["dis_P5"].state_dict()
+                        data["model_dis_P5"] = self.model["dis_P5"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["optimizer_dis_P4"] = self.optimizer["dis_P4"].state_dict()
+                        data["model_dis_P4"] = self.model["dis_P4"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["optimizer_dis_P3"] = self.optimizer["dis_P3"].state_dict()
+                        data["model_dis_P3"] = self.model["dis_P3"].state_dict()
                 if self.cfg.MODEL.ADV.USE_DIS_CENTER_AWARE:
                     if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["optimizer_dis_P7_CA"] = self.optimizer["dis_P7_CA"].state_dict()
+                        data["model_dis_P7_CA"] = self.model["dis_P7_CA"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["optimizer_dis_P6_CA"] = self.optimizer["dis_P6_CA"].state_dict()
+                        data["model_dis_P6_CA"] = self.model["dis_P6_CA"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["optimizer_dis_P5_CA"] = self.optimizer["dis_P5_CA"].state_dict()
+                        data["model_dis_P5_CA"] = self.model["dis_P5_CA"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["optimizer_dis_P4_CA"] = self.optimizer["dis_P4_CA"].state_dict()
+                        data["model_dis_P4_CA"] = self.model["dis_P4_CA"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["optimizer_dis_P3_CA"] = self.optimizer["dis_P3_CA"].state_dict()
+                        data["model_dis_P3_CA"] = self.model["dis_P3_CA"].state_dict()
                 if self.cfg.MODEL.ADV.USE_DIS_OUT:
                     if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["optimizer_dis_P7_OUT"] = self.optimizer["dis_P7_OUT"].state_dict()
+                        data["model_dis_P7_OUT"] = self.model["dis_P7_OUT"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["optimizer_dis_P6_OUT"] = self.optimizer["dis_P6_OUT"].state_dict()
+                        data["model_dis_P6_OUT"] = self.model["dis_P6_OUT"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["optimizer_dis_P5_OUT"] = self.optimizer["dis_P5_OUT"].state_dict()
+                        data["model_dis_P5_OUT"] = self.model["dis_P5_OUT"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["optimizer_dis_P4_OUT"] = self.optimizer["dis_P4_OUT"].state_dict()
+                        data["model_dis_P4_OUT"] = self.model["dis_P4_OUT"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["optimizer_dis_P3_OUT"] = self.optimizer["dis_P3_OUT"].state_dict()
+                        data["model_dis_P3_OUT"] = self.model["dis_P3_OUT"].state_dict()
                 if self.cfg.MODEL.ADV.USE_DIS_CON:
                     if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["optimizer_dis_P7_CON"] = self.optimizer["dis_P7_CON"].state_dict()
+                        data["model_dis_P7_CON"] = self.model["dis_P7_CON"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["optimizer_dis_P6_CON"] = self.optimizer["dis_P6_CON"].state_dict()
+                        data["model_dis_P6_CON"] = self.model["dis_P6_CON"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["optimizer_dis_P5_CON"] = self.optimizer["dis_P5_CON"].state_dict()
+                        data["model_dis_P5_CON"] = self.model["dis_P5_CON"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["optimizer_dis_P4_CON"] = self.optimizer["dis_P4_CON"].state_dict()
+                        data["model_dis_P4_CON"] = self.model["dis_P4_CON"].state_dict()
                     if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["optimizer_dis_P3_CON"] = self.optimizer["dis_P3_CON"].state_dict()
-
-
-
-        if self.scheduler is not None:
-            if self.cfg.MODEL.DA_ON:
-                if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
-                    if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["scheduler_dis_P7"] = self.scheduler["dis_P7"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["scheduler_dis_P6"] = self.scheduler["dis_P6"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["scheduler_dis_P5"] = self.scheduler["dis_P5"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["scheduler_dis_P4"] = self.scheduler["dis_P4"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["scheduler_dis_P3"] = self.scheduler["dis_P3"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_CENTER_AWARE:
-                    if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["scheduler_dis_P7_CA"] = self.scheduler["dis_P7_CA"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["scheduler_dis_P6_CA"] = self.scheduler["dis_P6_CA"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["scheduler_dis_P5_CA"] = self.scheduler["dis_P5_CA"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["scheduler_dis_P4_CA"] = self.scheduler["dis_P4_CA"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["scheduler_dis_P3_CA"] = self.scheduler["dis_P3_CA"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_OUT:
-                    if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["scheduler_dis_P7_OUT"] = self.scheduler["dis_P7_OUT"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["scheduler_dis_P6_OUT"] = self.scheduler["dis_P6_OUT"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["scheduler_dis_P5_OUT"] = self.scheduler["dis_P5_OUT"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["scheduler_dis_P4_OUT"] = self.scheduler["dis_P4_OUT"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["scheduler_dis_P3_OUT"] = self.scheduler["dis_P3_OUT"].state_dict()
-                if self.cfg.MODEL.ADV.USE_DIS_CON:
-                    if self.cfg.MODEL.ADV.USE_DIS_P7:
-                        data["scheduler_dis_P7_CON"] = self.scheduler["dis_P7_CON"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P6:
-                        data["scheduler_dis_P6_CON"] = self.scheduler["dis_P6_CON"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P5:
-                        data["scheduler_dis_P5_CON"] = self.scheduler["dis_P5_CON"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P4:
-                        data["scheduler_dis_P4_CON"] = self.scheduler["dis_P4_CON"].state_dict()
-                    if self.cfg.MODEL.ADV.USE_DIS_P3:
-                        data["scheduler_dis_P3_CON"] = self.scheduler["dis_P3_CON"].state_dict()
-        # data.update(kwargs)
+                        data["model_dis_P3_CON"] = self.model["dis_P3_CON"].state_dict()
+            if self.optimizer is not None:
+                if self.cfg.MODEL.DA_ON:
+                    if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["optimizer_dis_P7"] = self.optimizer["dis_P7"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["optimizer_dis_P6"] = self.optimizer["dis_P6"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["optimizer_dis_P5"] = self.optimizer["dis_P5"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["optimizer_dis_P4"] = self.optimizer["dis_P4"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["optimizer_dis_P3"] = self.optimizer["dis_P3"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_CENTER_AWARE:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["optimizer_dis_P7_CA"] = self.optimizer["dis_P7_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["optimizer_dis_P6_CA"] = self.optimizer["dis_P6_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["optimizer_dis_P5_CA"] = self.optimizer["dis_P5_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["optimizer_dis_P4_CA"] = self.optimizer["dis_P4_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["optimizer_dis_P3_CA"] = self.optimizer["dis_P3_CA"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_OUT:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["optimizer_dis_P7_OUT"] = self.optimizer["dis_P7_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["optimizer_dis_P6_OUT"] = self.optimizer["dis_P6_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["optimizer_dis_P5_OUT"] = self.optimizer["dis_P5_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["optimizer_dis_P4_OUT"] = self.optimizer["dis_P4_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["optimizer_dis_P3_OUT"] = self.optimizer["dis_P3_OUT"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_CON:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["optimizer_dis_P7_CON"] = self.optimizer["dis_P7_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["optimizer_dis_P6_CON"] = self.optimizer["dis_P6_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["optimizer_dis_P5_CON"] = self.optimizer["dis_P5_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["optimizer_dis_P4_CON"] = self.optimizer["dis_P4_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["optimizer_dis_P3_CON"] = self.optimizer["dis_P3_CON"].state_dict()
+            if self.scheduler is not None:
+                if self.cfg.MODEL.DA_ON:
+                    if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["scheduler_dis_P7"] = self.scheduler["dis_P7"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["scheduler_dis_P6"] = self.scheduler["dis_P6"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["scheduler_dis_P5"] = self.scheduler["dis_P5"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["scheduler_dis_P4"] = self.scheduler["dis_P4"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["scheduler_dis_P3"] = self.scheduler["dis_P3"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_CENTER_AWARE:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["scheduler_dis_P7_CA"] = self.scheduler["dis_P7_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["scheduler_dis_P6_CA"] = self.scheduler["dis_P6_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["scheduler_dis_P5_CA"] = self.scheduler["dis_P5_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["scheduler_dis_P4_CA"] = self.scheduler["dis_P4_CA"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["scheduler_dis_P3_CA"] = self.scheduler["dis_P3_CA"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_OUT:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["scheduler_dis_P7_OUT"] = self.scheduler["dis_P7_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["scheduler_dis_P6_OUT"] = self.scheduler["dis_P6_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["scheduler_dis_P5_OUT"] = self.scheduler["dis_P5_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["scheduler_dis_P4_OUT"] = self.scheduler["dis_P4_OUT"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["scheduler_dis_P3_OUT"] = self.scheduler["dis_P3_OUT"].state_dict()
+                    if self.cfg.MODEL.ADV.USE_DIS_CON:
+                        if self.cfg.MODEL.ADV.USE_DIS_P7:
+                            data["scheduler_dis_P7_CON"] = self.scheduler["dis_P7_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P6:
+                            data["scheduler_dis_P6_CON"] = self.scheduler["dis_P6_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P5:
+                            data["scheduler_dis_P5_CON"] = self.scheduler["dis_P5_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P4:
+                            data["scheduler_dis_P4_CON"] = self.scheduler["dis_P4_CON"].state_dict()
+                        if self.cfg.MODEL.ADV.USE_DIS_P3:
+                            data["scheduler_dis_P3_CON"] = self.scheduler["dis_P3_CON"].state_dict()
+        else:
+            data = self.model.state_dict()
 
         save_file = os.path.join(self.save_dir, "{}.pth".format(name))
         self.logger.info("Saving checkpoint to {}".format(save_file))
@@ -313,25 +307,21 @@ class DetectronCheckpointer(Checkpointer):
         self.logger.info("Loading checkpoint from {}".format(f))
         checkpoint = self._load_file(f)
 
-
-
         self._load_model(checkpoint, load_dis)
 
         if load_opt_sch:
             if "optimizer_fcos" in checkpoint and self.optimizer:
                 self.logger.info("Loading optimizer from {}".format(f))
-
                 self.optimizer["backbone"].load_state_dict(checkpoint.pop("optimizer_backbone"))
                 self.optimizer["fcos"].load_state_dict(checkpoint.pop("optimizer_fcos"))
                 if "optimizer_middle_head" in checkpoint:
                     self.optimizer["middle_head"].load_state_dict(checkpoint.pop("optimizer_middle_head"))
 
 
-
                 if self.cfg.MODEL.DA_ON:
                     if self.cfg.MODEL.ADV.USE_DIS_GLOBAL:
                         if self.cfg.MODEL.ADV.USE_DIS_P7:
-                            self.optimizer["dis_P7"].load_state_dict(checkpoint.pop("optimizer_dis_P7"))
+                            self.optimizer["dis_P7"].loatd_state_dict(checkpoint.pop("optimizer_dis_P7"))
                         if self.cfg.MODEL.ADV.USE_DIS_P6:
                             self.optimizer["dis_P6"].load_state_dict(checkpoint.pop("optimizer_dis_P6"))
                         if self.cfg.MODEL.ADV.USE_DIS_P5:
@@ -491,6 +481,8 @@ class DetectronCheckpointer(Checkpointer):
                         self.logger.info(
                             "No output space discriminator found in the checkpoint. Initializing model from scratch"
                         )
-        else:
+        elif "backbone" in checkpoint:
             # load others, e.g., Imagenet pretrained pkl
             load_state_dict(self.model["backbone"], checkpoint.pop("model"))
+        else:
+            load_state_dict(self.model, checkpoint.pop("model"))

@@ -1,0 +1,71 @@
+OUTPUT_DIR: experiments/sigma_plus_plus/city_to_foggy_res50/
+# NOTE: We didn't carefully tune hyperparameters for frcnn-based implementation due to the time limit.
+MODEL:
+  DAFRCNN_ON: True
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50"
+  DOMAIN_ADAPTATION_ON: True
+  MIDDLE_HEAD:
+    CONDGRAPH_ON: True
+    IN_NORM: 'LN' # vison-to-graph transformation (support GN/BN/LN)
+    NUM_CONVS_IN: 2 # setting 1 may be better, which hasn't been tested
+    GM:
+      # SIGMA_plus_plus:
+      WITH_HyperGNN: True
+      HyperEdgeNum: 6 
+      NUM_HYPERGNN_LAYER: 1
+      ANGLE_EPS: 1e-4
+
+      # SIGMA:
+      # node sampling
+      NUM_NODES_PER_LVL_SR: 50  # per-level maximum nodes
+      NUM_NODES_PER_LVL_TG: 50
+      BG_RATIO: 8 # the background node ratio
+      # loss weight
+      MATCHING_LOSS_WEIGHT: 0.1 
+      NODE_LOSS_WEIGHT: 1.0
+      NODE_DIS_WEIGHT: 0.2
+      NODE_DIS_LAMBDA:  0.1
+      # detailed settings
+      MATCHING_LOSS_CFG: 'MSE' # matching loss config
+      MATCHING_CFG: 'o2o' # one-to-one (o2o) or many-to-many (m2m) (m2m replaces sinkhorn with sigmoid)
+      WITH_QUADRATIC_MATCHING: True # Quadratic constraints in graph matching. This gives a little gain for the second stage training
+      WITH_NODE_DIS: True 
+      WITH_SEMANTIC_COMPLETION: True # Conduct Gaussian sampling to complete the missing nodes
+      WITH_CLUSTER_UPDATE: True # use spectral clustering to update the Graph-guided Memory Bank
+      WITH_COMPLETE_GRAPH: True # conduct one-layer graph-based message propogation
+      WITH_DOMAIN_INTERACTION: True # Cross Graph Interaction
+      WITH_SCORE_WEIGHT: False # use confidence as the adaptive weight in the node loss
+      WITH_CTR: False  # sample target nodes with classification scores \times centerness scors
+  RPN:
+    PRE_NMS_TOP_N_TEST: 6000
+    POST_NMS_TOP_N_TEST: 1000
+  ROI_BOX_HEAD:
+    NUM_CLASSES: 9
+  ROI_HEADS:
+    BATCH_SIZE_PER_IMAGE: 256
+    NMS: 0.3
+  DA_HEADS:
+    DA_IMG_GRL_WEIGHT: 0.1
+    DA_INS_GRL_WEIGHT: 0.1
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+DATASETS:
+  TRAIN_SOURCE: ("cityscapes_train_cocostyle", )
+  TRAIN_TARGET: ("cityscapes_foggy_train_cocostyle", )
+  TEST: ("cityscapes_foggy_val_cocostyle", )
+INPUT:
+  MIN_SIZE_TRAIN: (600,)
+  MAX_SIZE_TRAIN: 1200
+  MIN_SIZE_TEST: 600
+  MAX_SIZE_TEST: 1200
+SOLVER:
+  VAL_ITER: 1000
+  BASE_LR: 0.001
+  WEIGHT_DECAY: 0.0005
+  STEPS: (60000,)
+  MAX_ITER: 70000
+  IMS_PER_BATCH: 2
+  INITIAL_AP50: 35
+TEST:
+  IMS_PER_BATCH: 2
