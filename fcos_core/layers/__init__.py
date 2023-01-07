@@ -22,6 +22,8 @@ from .cosine_loss import CosineLoss
 from .sigmoid_focal_loss_wbg import BCEFocalLoss, FocalLoss
 from .transformer import MultiHeadAttention, HyperGraph
 from .affinity_layer import Affinity
+from .gradient_scalar_layer import GradientScalarLayer
+
 
 __all__ = ["nms", "roi_align", "ROIAlign", "roi_pool", "ROIPool",
            "smooth_l1_loss", "Conv2d", "ConvTranspose2d", "DFConv2d", "interpolate",
