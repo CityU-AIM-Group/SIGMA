@@ -7,6 +7,7 @@ By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 Two branches of the project:
 - Main branch (SIGMA): ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
 - [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
+- [FRCNN-SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b FRCNN-SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
 
 The features of [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++):
 - More datasets and instructions
@@ -15,7 +16,7 @@ The features of [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++)
 
 ![image](./assets/matching_visualization.png)
 
- SIGMA++ has found its final home now, indicating the end of this series of works. The growth process of SIGMA++ is full of frustration: 👶 ➡  🧒. 
+ SIGMA++ has found its final home now, indicating the end of this series of works. The growth of SIGMA++ is full of frustration: 👶 ➡  🧒. 
  
  [SCAN](https://ojs.aaai.org/index.php/AAAI/article/view/20031) ➡ [SCAN++](https://ieeexplore.ieee.org/document/9931144/) ➡ [SIGMA](https://openaccess.thecvf.com/content/CVPR2022/papers/Li_SIGMA_Semantic-Complete_Graph_Matching_for_Domain_Adaptive_Object_Detection_CVPR_2022_paper.pdf) ➡ [SIGMA++](./assets/manuscript.pdf)
 
