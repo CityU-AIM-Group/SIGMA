@@ -59,7 +59,7 @@ All models are available at [SIGMA_plus_plus](https://portland-my.sharepoint.com
 | Pascal | Watercolor| |voc | R-101 | - |57.2|- |
 | Pascal | Comic| |voc | R-101 | - |37.1|- |
 
-Faster RCNN C4 based implementation: city to foggy (If your need the implementation, feel free to tell me.). You can find the model and log at [frcnn_city_to_foggy](https://portland-my.sharepoint.com/:f:/g/personal/wuyangli2-c_my_cityu_edu_hk/EvBHItGhXr9Csb0XTz3Hl2kBHWE8OG4Q1JYHlnbhOp7e9A?e=uAIx10), which is based on [DA-FRCNN](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch). You can test it on this framework [DA-FRCNN](https://github.com/krumo/Domain-Adaptive-Faster-RCNN-PyTorch).
+Faster RCNN C4 based implementation: city to foggy (See [FRCNN-SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/FRCNN-SIGMA++) branch)
 
 Method | AP@50:95 | AP@50| AP@75 | APs |APm |APl|
 | :-----:| :-----:|:----:| :----: | :----:| :----: |:-----:| 
