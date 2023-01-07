@@ -4,7 +4,7 @@
 
 By [Wuyang Li](https://wymancv.github.io/wuyang.github.io/)
 
-Two branches of the project:
+Three branches of the project:
 - Main branch (SIGMA): ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
 - [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
 - [FRCNN-SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b FRCNN-SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
