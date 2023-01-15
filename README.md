@@ -80,10 +80,12 @@ If you think this work is helpful for your project, please give it a star and ci
 
 ```BibTeX
 @ARTICLE{li2023sigma_plus_plus,
-  author={Li, Wuyang, Xinyu, Liu and Yuan, Yixuan},
+  author={Li, Wuyang and Liu, Xinyu and Yuan, Yixuan},
   journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
   title={SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection}, 
   year={2023},
+  pages={1-18},
+  doi={10.1109/TPAMI.2023.3235367}}
 ```
 Relevant project:
 ```BibTeX
