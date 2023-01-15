@@ -5,7 +5,7 @@
 Three branches of the project:
 - Main branch (SIGMA): ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
 - [SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
-- [FRCNN-SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/SIGMA++) branch: ```git clone -b FRCNN-SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
+- [FRCNN-SIGMA++](https://github.com/CityU-AIM-Group/SIGMA/tree/FRCNN-SIGMA++) branch: ```git clone -b FRCNN-SIGMA++ https://github.com/CityU-AIM-Group/SIGMA.git```
 
 
  SIGMA++ has found its final home now, indicating the end of this series of works. The growth of SIGMA++ is full of frustration: 👶 ➡  🧒. 
@@ -93,12 +93,14 @@ python tools/test_net.py \
 
 If you think this work is helpful for your project, please give it a star and citation. We sincerely appreciate for your acknowledgments.
 
-```BibTeX
+```BibTeX  
 @ARTICLE{li2023sigma_plus_plus,
-  author={Li, Wuyang, Xinyu, Liu and Yuan, Yixuan},
+  author={Li, Wuyang and Liu, Xinyu and Yuan, Yixuan},
   journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
   title={SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection}, 
   year={2023},
+  pages={1-18},
+  doi={10.1109/TPAMI.2023.3235367}}
 ```
 Relevant project:
 ```BibTeX
