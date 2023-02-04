@@ -1,6 +1,6 @@
-# [SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection (TPAMI 2023)](./assets/manuscript.pdf)
+# [SIGMA++: Improved Semantic-complete Graph Matching for Domain Adaptive Object Detection (TPAMI 2023)](https://ieeexplore.ieee.org/document/10012542)
 
-[[Manuscript](./assets/manuscript.pdf)] [[知乎](https://zhuanlan.zhihu.com/p/492956292)]
+[[Manuscript](https://ieeexplore.ieee.org/document/10012542)] [[知乎](https://zhuanlan.zhihu.com/p/492956292)]
 
 Three branches of the project:
 - Main branch (SIGMA): ```git clone https://github.com/CityU-AIM-Group/SIGMA.git```
