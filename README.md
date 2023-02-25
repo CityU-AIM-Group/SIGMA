@@ -41,6 +41,7 @@ Hypergraph (SIGMA++):
 Prepare required benchmark datasets following [DATASET.md](./docs/DATASETS.md). Almost all popular DAOD benchmarks are supported in this project.
 
 #### Installation
+
 Check [INSTALL.md](./docs/INSTALL.md) for installation instructions. Feel free to screenshot your issue for me if you meet some problems. Thanks.
 
 ## 📦 Well-trained Models
@@ -69,6 +70,8 @@ SIGMA++ | 23.2  | 43.5  |21.0  |2.4  |20.7  |47.0 |
 
 
 ## 🔥 Get Start
+NOTE: In the code comments, there is a small correction about batchsize: IMS_PER_BATACH=4 indicates 4 images per domain. 
+
 Train the model with the default setting (e.g., city to foggy):
 ```
 python tools/train_net_da.py \
