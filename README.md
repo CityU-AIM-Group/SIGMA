@@ -113,6 +113,8 @@ The well-trained models are available at this [link](https://portland-my.sharepo
 | KITTI | City | |COCO|V-16 | 22.6 |46.6 |20.0 |kitti_to_city_vgg16_46.45_mAP.pth|
 
 ## 🔥 Get start
+NOTE: In the code comments, there is a small correction about batchsize: IMS_PER_BATACH=4 indicates 4 images per domain.
+
 Train the model from the scratch with the default setting (batchsize = 4):
 ```
 python tools/train_net_da.py \
